@@ -11,7 +11,7 @@ const Userrouter = require("./models/users");
 app.use("/users", Userrouter);
 
 db.sequelize.sync().then(() => {
-    app.listen(3001, () => {
-        console.log("server up on port 3001")
-    })
-})
+  app.listen(3001, () => {
+    console.log("server up on port 3001");
+  });
+});
