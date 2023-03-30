@@ -5,6 +5,7 @@ router.get("/register", async (req, res) => {
   const { username, password, email, age, phonenumber } = req.body;
   const usernameiu = await Users.findOne({ where: { username: username } });
   const emailiu = await Users.findOne({ where: { email: email } });
+
   var phonenumeriu = null
   if (phonenumber) {
     var phonenumeriu = await Users.findOne({
@@ -12,6 +13,10 @@ router.get("/register", async (req, res) => {
     });
   }
 
+  const parts = age.split('-');
+  const mydate = new Date(parts[0], parts[1] - 1, parts[2]); 
+  const agedate = mydate.toDateString()
+  console.log(agedate)
 
   if (usernameiu) {
     res.json({ error: "username already in use" });
