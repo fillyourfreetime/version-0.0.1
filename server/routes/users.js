@@ -25,5 +25,5 @@ router.get("/register", async (req, res) => {
   } else if (phonenumeriu) {
     res.json({ error: "phone number already in use" });
   } else if (age) {
-  }
+  } 
 });
