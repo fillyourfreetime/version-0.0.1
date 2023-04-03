@@ -1,22 +1,37 @@
 const express = require("express");
 const router = express.Router();
+const { Users } = require("../models");
 
-router.get("/register", async (req, res) => {
-  const { username, password, email, age, phonenumber } = req.body;
+router.post("/register", async (req, res) => {
+  const { username, password, passwordrep, email, age, phonenumber } = req.body;
+  console.log(req.body);
   const usernameiu = await Users.findOne({ where: { username: username } });
   const emailiu = await Users.findOne({ where: { email: email } });
 
-  var phonenumeriu = null
+  var phonenumeriu = null;
   if (phonenumber) {
     var phonenumeriu = await Users.findOne({
       where: { phonenumber: phonenumber },
     });
   }
 
-  const parts = age.split('-');
-  const mydate = new Date(parts[0], parts[1] - 1, parts[2]); 
-  const agedate = mydate.toDateString()
-  console.log(agedate)
+  const parts = age.split("-");
+  var monthint = parseInt(parts[0]);
+  var monthint = monthint + 1;
+  const monthstr = monthint.toString();
+  parts[0] = monthstr;
+
+  console.log(parts[0]);
+  const mydate = new Date(`${parts[2]}/${parts[1]}/${parts[0]}`);
+  console.log(mydate);
+
+  const leeftijd = (mydate) => {
+    var diff_ms = Date.now() - mydate.getTime();
+    var age_dt = new Date(diff_ms);
+    var year = age_dt.getUTCFullYear();
+    return Math.abs(year - 1970);
+  };
+  const agee = leeftijd(mydate);
 
   if (usernameiu) {
     res.json({ error: "username already in use" });
@@ -24,6 +39,11 @@ router.get("/register", async (req, res) => {
     res.json({ error: "email already in use" });
   } else if (phonenumeriu) {
     res.json({ error: "phone number already in use" });
-  } else if (age) {
-  } 
+  } else if (agee < 13) {
+    res.json({ error: "you have to be atleast 13 or older to use the app" });
+  } else {
+    res.json("success");
+  }
 });
+
+module.exports = router;

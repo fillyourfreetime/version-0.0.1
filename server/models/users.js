@@ -13,15 +13,15 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     age: {
-      type: DataTypes.DATEONLY,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     phonenumber: {
-      type: DataTypes.STRING(10),
+      type: DataTypes.STRING,
       allowNull: true,
     },
     emailverification: {
-      type: DataTypes.BOOLEAN,
+      type: DataTypes.STRING,
       allowNull: false,
       defaultValue: 0,
     },
