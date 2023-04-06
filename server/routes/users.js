@@ -59,4 +59,21 @@ router.post("/register", async (req, res) => {
   }
 });
 
+router.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  const user = await Users.findOne({
+    where: {
+      $or: [{ username: { $eq: username } }, { email: { $eq: username } }],
+    },
+  });
+  if (!user) {
+    res.json({error: "password or username incorrect"})
+  }
+
+  bcrypt.compare(password, user.password).then((match) => {
+    
+  })
+});
+
 module.exports = router;
