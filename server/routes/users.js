@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { Users } = require("../models");
+const bcrypt = require("bcrypt");
 
 router.post("/register", async (req, res) => {
   const { username, password, passwordrep, email, age, phonenumber } = req.body;
@@ -33,6 +34,8 @@ router.post("/register", async (req, res) => {
   };
   const agee = leeftijd(mydate);
 
+  const hashpw = bcrypt.hash(password, 10);
+
   if (usernameiu) {
     res.json({ error: "username already in use" });
   } else if (emailiu) {
@@ -41,7 +44,17 @@ router.post("/register", async (req, res) => {
     res.json({ error: "phone number already in use" });
   } else if (agee < 13) {
     res.json({ error: "you have to be atleast 13 or older to use the app" });
+  } else if (password != password) {
+    res.json({ error: "passwords are not the same" });
   } else {
+    Users.create({
+      username: username,
+      email: email,
+      password: hashpw,
+      age: mydate,
+      phonenumber: phonenumber,
+      emailverification: 1,
+    });
     res.json("success");
   }
 });
