@@ -34,7 +34,7 @@ router.post("/register", async (req, res) => {
   };
   const agee = leeftijd(mydate);
 
-  const hashpw = bcrypt.hash(password, 10);
+  const hashpw = await bcrypt.hash(password, 10);
 
   if (usernameiu) {
     res.json({ error: "username already in use" });
@@ -72,7 +72,7 @@ router.post("/login", async (req, res) => {
   }
 
   bcrypt.compare(password, user.password).then((match) => {
-    
+    if (!match) res.json({error: "password or username incorrect"})
   })
 });
 
