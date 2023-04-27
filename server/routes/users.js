@@ -22,9 +22,7 @@ router.post("/register", async (req, res) => {
   const monthstr = monthint.toString();
   parts[0] = monthstr;
 
-  console.log(parts[0]);
   const mydate = new Date(`${parts[2]}/${parts[1]}/${parts[0]}`);
-  console.log(mydate);
 
   const leeftijd = (mydate) => {
     var diff_ms = Date.now() - mydate.getTime();
@@ -61,19 +59,33 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
+  console.log(req.body);
+  console.log(username);
 
   const user = await Users.findOne({
-    where: {
-      $or: [{ username: { $eq: username } }, { email: { $eq: username } }],
-    },
+    where: { username: username },
   });
-  if (!user) {
-    res.json({error: "password or username incorrect"})
+  console.log(user);
+  const emailuser = await Users.findOne({
+    where: { email: username },
+  });
+  console.log(emailuser);
+  if (!user && !emailuser) {
+    res.json({ error: "password or username incorrect" });
   }
+  if (user) {
+    bcrypt.compare(password, user.password).then((match) => {
+      if (!match) res.json({ error: "password or username incorrect" });
 
-  bcrypt.compare(password, user.password).then((match) => {
-    if (!match) res.json({error: "password or username incorrect"})
-  })
+      else res.json("login succesfull");
+    });
+  } else if (emailuser) {
+    bcrypt.compare(password, emailuser.password).then((match) => {
+      if (!match) res.json({ error: "password or username incorrect" });
+
+      else res.json("login succesfull");
+    });
+  }
 });
 
 module.exports = router;
