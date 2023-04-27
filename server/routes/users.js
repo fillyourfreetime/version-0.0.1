@@ -4,7 +4,16 @@ const { Users } = require("../models");
 const bcrypt = require("bcrypt");
 
 router.post("/register", async (req, res) => {
-  const { username, password, passwordrep, email, age, phonenumber } = req.body;
+  const {
+    username,
+    password,
+    passwordrep,
+    email,
+    age,
+    phonenumber,
+    gender,
+    othergender,
+  } = req.body;
   console.log(req.body);
   const usernameiu = await Users.findOne({ where: { username: username } });
   const emailiu = await Users.findOne({ where: { email: email } });
@@ -14,6 +23,11 @@ router.post("/register", async (req, res) => {
     var phonenumeriu = await Users.findOne({
       where: { phonenumber: phonenumber },
     });
+  }
+  if (!gender) {
+    var genderin = othergender;
+  } else {
+    var genderin = gender;
   }
 
   const parts = age.split("-");
@@ -52,6 +66,7 @@ router.post("/register", async (req, res) => {
       age: mydate,
       phonenumber: phonenumber,
       emailverification: 1,
+      gender: genderin,
     });
     res.json("success");
   }
@@ -76,16 +91,30 @@ router.post("/login", async (req, res) => {
   if (user) {
     bcrypt.compare(password, user.password).then((match) => {
       if (!match) res.json({ error: "password or username incorrect" });
-
       else res.json("login succesfull");
     });
   } else if (emailuser) {
     bcrypt.compare(password, emailuser.password).then((match) => {
       if (!match) res.json({ error: "password or username incorrect" });
-
       else res.json("login succesfull");
     });
   }
 });
+
+router.get("/userdata/:id", async (req, res) => {
+  const id = req.params.id;
+  console.log(id);
+
+  const userinfo = await Users.findOne({
+    where: { id: id },
+    attributes: { exclude: ["password", "emailverification"] },
+  });
+
+  res.json(userinfo);
+});
+
+router.post("/edituser/:id", async (req, res) => {});
+
+router.post("/editprofile/:id", async (req, res) => {});
 
 module.exports = router;

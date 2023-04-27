@@ -25,6 +25,20 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 0,
     },
+    gender: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    pfp: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: "defualtpfp.jpg",
+    },
+    bio: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: "hi I'm using",
+    },
   });
   //Users.associate = (models) => {
   //  Users.hasMany(models.Likes, {
