@@ -1,4 +1,5 @@
 const express = require("express");
+const fileUpload = require('express-fileupload');
 const router = express.Router();
 const { Users } = require("../models");
 const bcrypt = require("bcrypt");
@@ -44,7 +45,7 @@ router.post("/register", async (req, res) => {
     var year = age_dt.getUTCFullYear();
     return Math.abs(year - 1970);
   };
-  const agee = leeftijd(mydate);
+  const agee = leeftijd(mydate); 
 
   const hashpw = await bcrypt.hash(password, 10);
 
@@ -54,9 +55,9 @@ router.post("/register", async (req, res) => {
     res.json({ error: "email already in use" });
   } else if (phonenumeriu) {
     res.json({ error: "phone number already in use" });
-  } else if (agee < 13) {
+  } else if (agee < 13) { 
     res.json({ error: "you have to be atleast 13 or older to use the app" });
-  } else if (password != password) {
+  } else if (password != passwordrep) {
     res.json({ error: "passwords are not the same" });
   } else {
     Users.create({
@@ -115,6 +116,37 @@ router.get("/userdata/:id", async (req, res) => {
 
 router.post("/edituser/:id", async (req, res) => {});
 
-router.post("/editprofile/:id", async (req, res) => {});
+app.use(
+  fileUpload({
+      limits: {
+          fileSize: 10000000,
+      },
+      abortOnLimit: true,
+  })
+);
+
+router.post("/editprofile/:id", async (req, res) => {
+  const id = req.params.id
+    // Get the file that was set to our field named "image"
+    const { image } = req.files;
+
+    // If no image submitted, exit
+    if (!image) {
+        console.log(`does not contain an image`)
+        return res.sendStatus(400);
+    }
+
+    //Would make the code "save" by not allowing any uploads at all
+    //if (/^image/.test(image.mimetype)){
+    //    console.log("not an image");
+    //    return res.sendStatus(400);
+    //}
+
+    // Move the uploaded image to our upload folder
+    image.mv(`${__dirname}/images/profile_pictures/pfp_${id}}`);
+
+    // All good
+    res.sendStatus(200);
+});
 
 module.exports = router;
