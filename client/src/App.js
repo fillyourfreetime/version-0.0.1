@@ -12,6 +12,8 @@ function App() {
   function handleApi() {
     const formData = new FormData();
     formData.append("image", image);
+    formData.append("pfp", "yes");
+    formData.append("filetype", image.type )
     console.log('hello')
     console.log(image)
     console.log(formData)
