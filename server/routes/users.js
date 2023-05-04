@@ -5,7 +5,45 @@ const bcrypt = require("bcrypt");
 const multer = require("multer");
 const path = require("path");
 const sharp = require("sharp");
-const fs = require("fs")
+const fs = require("fs");
+const util = require("util");
+const nodemailer = require("nodemailer");
+const randtoken = require("rand-token");
+
+const readFileAsync = util.promisify(fs.readFile);
+
+const sendEmail = (email, token) => {
+  var email = email;
+  var token = token;
+
+  var mail = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "informaticasitethijmen@gmail.com", // Your email id
+      pass: "fngsqbchazvycsxl", // Your password
+    },
+  });
+
+  var mailOptions = {
+    from: "informaticasitethijmen@gmail.com",
+    to: email,
+    subject: "Email verification",
+    html:
+      '<p> use this <a href="http://localhost:3000/verify-email?token=' +
+      token +
+      '">link</a> to verify your email address</p>',
+  };
+
+  mail.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log("not send");
+      return 1;
+    } else {
+      console.log("send");
+      return 0;
+    }
+  });
+};
 
 router.post("/register", async (req, res) => {
   const {
@@ -19,8 +57,12 @@ router.post("/register", async (req, res) => {
     othergender,
   } = req.body;
   console.log(req.body);
-  const usernameiu = await Users.findOne({ where: { username: username } });
-  const emailiu = await Users.findOne({ where: { email: email } });
+  const usernameiu = await Users.findOne({
+    where: { username: username },
+  });
+  const emailiu = await Users.findOne({
+    where: { email: email },
+  });
 
   var phonenumeriu = null;
   if (phonenumber) {
@@ -50,6 +92,7 @@ router.post("/register", async (req, res) => {
   };
   const agee = leeftijd(mydate);
 
+  const token = randtoken.generate();
   const hashpw = await bcrypt.hash(password, 10);
 
   if (usernameiu) {
@@ -63,16 +106,43 @@ router.post("/register", async (req, res) => {
   } else if (password != passwordrep) {
     res.json({ error: "passwords are not the same" });
   } else {
-    Users.create({
-      username: username,
-      email: email,
-      password: hashpw,
-      age: mydate,
-      phonenumber: phonenumber,
-      emailverification: 1,
-      gender: genderin,
-    });
-    res.json("success");
+    const sent = sendEmail(email, token);
+    if (sent != 0) {
+      Users.create({
+        username: username,
+        email: email,
+        password: hashpw,
+        age: mydate,
+        phonenumber: phonenumber,
+        emailverification: 1,
+        gender: genderin,
+        token: token,
+      });
+      res.json("please check your email for verification");
+    } else {
+      res.json({ error: "please enter valid email" });
+    }
+  }
+});
+
+router.post("/emailregistration:token", async (req, res) => {
+  const token = req.params.token;
+
+  const userinfo = await Users.findOne({
+    where: { token: token },
+    attributes: { exclude: ["password", "emailverification"] },
+  });
+
+  if (!userinfo){
+    res.json({error: "invalid link"})
+  } else if (userinfo.emailverification == 1) {
+    res.json({error: "email already verified"})
+  } else {
+    const results = await Users.update(
+      { emailverification: 1 },
+      { where: { token: token } }
+    );
+    res.json('success')
   }
 });
 
@@ -105,6 +175,12 @@ router.post("/login", async (req, res) => {
   }
 });
 
+const getImageBase64 = async (filePath) => {
+  const image = await readFileAsync(filePath);
+  const buffer = Buffer.from(image);
+  return `data:image/png;base64,${buffer.toString("base64")}`;
+};
+
 router.get("/userdata/:id", async (req, res) => {
   const id = req.params.id;
   console.log(id);
@@ -114,17 +190,101 @@ router.get("/userdata/:id", async (req, res) => {
     attributes: { exclude: ["password", "emailverification"] },
   });
 
-  res.json(userinfo);
+  const imageURI = await getImageBase64(
+    path.join(__dirname, "..", userinfo.pfp)
+  );
+
+  res.json({
+    userInfo: userinfo,
+    imageURI: imageURI,
+  });
 });
 
-router.post("/edituser/:id", async (req, res) => {});
+router.post("/edituser/:id", async (req, res) => {
+  const id = req.params.id;
+  const { passwordold, passwordnew, passwordnewrep, newusername, phonenumber } =
+    req.body;
+  console.log(req.body);
+
+  const userinfo = await Users.findOne({ where: { id: id } });
+
+  if (passwordold) {
+    console.log(passwordold);
+    await bcrypt.compare(passwordold, userinfo.password).then((match) => {
+      if (!match) {
+        res.json({ error: "old password is incorrect" });
+      }
+    });
+    if (passwordnew != passwordnewrep) {
+      res.json({ error: "passswors are not the same" });
+    } else {
+      const hashpw = await bcrypt.hash(passwordnew, 10);
+      try {
+        var resultpw = await Users.update(
+          { password: hashpw },
+          { where: { id: id } }
+        );
+      } catch (err) {
+        res.json({ error: err.message });
+      }
+    }
+  }
+
+  if (newusername) {
+    const usernameiu = await Users.findOne({
+      where: { username: newusername },
+    });
+    if (!usernameiu) {
+      try {
+        var resultun = await Users.update(
+          { username: newusername },
+          { where: { id: id } }
+        );
+        res.json("success");
+      } catch (err) {
+        res.json({ error: err.message });
+      }
+    } else {
+      res.json({ error: "username is already in use" });
+    }
+  }
+
+  if (phonenumber) {
+    var phonenumeriu = await Users.findOne({
+      where: { phonenumber: phonenumber },
+    });
+
+    if (!phonenumeriu) {
+      try {
+        var resultpn = await Users.update(
+          { username: phonenumber },
+          { where: { id: id } }
+        );
+      } catch (err) {
+        res.json({ error: err.message });
+      }
+    } else {
+      res.json({ error: "phonenumber is already in use" });
+    }
+  }
+
+  if (
+    (resultpw || !passwordold) &&
+    (resultun || !newusername) &&
+    (resultpn || !phonenumber)
+  ) {
+    res.json("success");
+  }
+});
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "images/temp");
   },
   filename: function (req, file, cb) {
-    cb(null, req.params.id + path.extname(file.originalname));
+    const id = req.params.id;
+    const extention = path.extname(file.originalname);
+    cb(null, `pfp_${id}` + extention);
   },
 });
 
@@ -133,19 +293,21 @@ const upload = multer({ storage: storage });
 router.post("/editprofile/:id", upload.single("image"), async (req, res) => {
   const id = req.params.id;
   const { pfp, bio, filetype } = req.body;
-  console.log(bio)
+  console.log(bio);
   console.log(req.body);
-  if (pfp) {
-    const typetemp = filetype.split("/");
-    const type = typetemp[typetemp.length - 1];
-
-    var imput = path.join(__dirname, "..", "images/temp", id + "." + type);
+  if (pfp && req.file) {
+    var imput = path.join(
+      __dirname,
+      "..",
+      "images/temp",
+      "pfp_" + id + "." + filetype
+    );
     var output = path.join(__dirname, "..", "images/temp", id + "png.png");
     var newimage = path.join(
       __dirname,
       "..",
       "images/profile_pictures",
-      id + ".png"
+      "pfp_" + id + ".png"
     );
 
     try {
@@ -179,38 +341,46 @@ router.post("/editprofile/:id", upload.single("image"), async (req, res) => {
       }
       const metadatanew = await sharp(newimage).metadata();
       console.log(metadatanew);
-      var newpfp = id + ".png";
+      var newpfp = "images/profile_pictures/pfp_" + id + ".png";
     } catch (error) {
       console.log(error);
     }
   }
   if (fs.existsSync(newimage)) {
-    var newpfp = id + ".png";
+    var newpfp = "images/profile_pictures/pfp_" + id + ".png";
   } else {
-    var newpfp = defualtpfp.jpg;
+    var newpfp = "images/profile_pictures/defualtpfp.jpg";
   }
-  if (bio){
-    var newbio = bio
-  }else {
+  if (bio) {
+    var newbio = bio;
+  } else {
     var oldbio = await Users.findOne({
       where: { id: id },
     });
-    var newbio = oldbio.bio
-    console.log(newbio)
+    var newbio = oldbio.bio;
+    console.log(newbio);
   }
+
+  fs.unlink(imput, (err) => {
+    if (err) {
+      throw err;
+    }
+  });
+  fs.unlink(output, (err) => {
+    if (err) {
+      throw err;
+    }
+  });
 
   try {
     const result = await Users.update(
-       {pfp: newpfp,
-       bio: newbio },
-       { where: { id: id },},
-       
-      
+      { pfp: newpfp, bio: newbio },
+      { where: { id: id } }
     );
     res.json("success");
   } catch (err) {
-    res.json({error: err.message});
+    res.json({ error: err.message });
   }
-});
+}); 
 
 module.exports = router;

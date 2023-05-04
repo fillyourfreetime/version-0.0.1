@@ -13,7 +13,9 @@ function App() {
     const formData = new FormData();
     formData.append("image", image);
     formData.append("pfp", "yes");
-    formData.append("filetype", image.type )
+    const filetype = image.name.split('.').pop();
+
+    formData.append("filetype", filetype )
     console.log('hello')
     console.log(image)
     console.log(formData)

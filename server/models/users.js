@@ -32,13 +32,17 @@ module.exports = (sequelize, DataTypes) => {
     pfp: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: "defualtpfp.jpg",
+      defaultValue: "images/profile_pictures/defualtpfp.jpg",
     },
     bio: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: "hi I'm using",
     },
+    token: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    }
   });
   //Users.associate = (models) => {
   //  Users.hasMany(models.Likes, {

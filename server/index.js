@@ -7,6 +7,8 @@ app.use(cors());
 
 const db = require("./models");
 
+app.use(express.static('images'));
+
 const usersRouter = require("./routes/users");
 app.use("/users", usersRouter);
 
