@@ -19,8 +19,8 @@ const sendEmail = (email, token) => {
   var mail = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "informaticasitethijmen@gmail.com", // Your email id
-      pass: "fngsqbchazvycsxl", // Your password
+      user: "informaticasitethijmen@gmail.com",
+      pass: "fngsqbchazvycsxl",
     },
   });
 
@@ -43,6 +43,27 @@ const sendEmail = (email, token) => {
       return 0;
     }
   });
+};
+
+const age = (age) => {
+  const parts = age.split("-");
+  var monthint = parseInt(parts[0]);
+  var monthint = monthint + 1;
+  const monthstr = monthint.toString();
+  parts[0] = monthstr;
+
+  const mydate = new Date(`${parts[2]}/${parts[1]}/${parts[0]}`);
+
+  const leeftijd = (mydate) => {
+    var diff_ms = Date.now() - mydate.getTime();
+    var age_dt = new Date(diff_ms);
+    var year = age_dt.getUTCFullYear();
+    return Math.abs(year - 1970);
+  };
+
+  const agee = leeftijd(mydate);
+
+  return agee;
 };
 
 router.post("/register", async (req, res) => {
@@ -76,21 +97,7 @@ router.post("/register", async (req, res) => {
     var genderin = gender;
   }
 
-  const parts = age.split("-");
-  var monthint = parseInt(parts[0]);
-  var monthint = monthint + 1;
-  const monthstr = monthint.toString();
-  parts[0] = monthstr;
-
-  const mydate = new Date(`${parts[2]}/${parts[1]}/${parts[0]}`);
-
-  const leeftijd = (mydate) => {
-    var diff_ms = Date.now() - mydate.getTime();
-    var age_dt = new Date(diff_ms);
-    var year = age_dt.getUTCFullYear();
-    return Math.abs(year - 1970);
-  };
-  const agee = leeftijd(mydate);
+  const agee = age(age);
 
   const token = randtoken.generate();
   const hashpw = await bcrypt.hash(password, 10);
@@ -133,16 +140,16 @@ router.post("/emailregistration:token", async (req, res) => {
     attributes: { exclude: ["password", "emailverification"] },
   });
 
-  if (!userinfo){
-    res.json({error: "invalid link"})
+  if (!userinfo) {
+    res.json({ error: "invalid link" });
   } else if (userinfo.emailverification == 1) {
-    res.json({error: "email already verified"})
+    res.json({ error: "email already verified" });
   } else {
     const results = await Users.update(
       { emailverification: 1 },
       { where: { token: token } }
     );
-    res.json('success')
+    res.json("success");
   }
 });
 
@@ -381,6 +388,6 @@ router.post("/editprofile/:id", upload.single("image"), async (req, res) => {
   } catch (err) {
     res.json({ error: err.message });
   }
-}); 
+});
 
 module.exports = router;
