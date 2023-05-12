@@ -8,7 +8,7 @@ const sharp = require("sharp");
 const fs = require("fs");
 const util = require("util");
 const nodemailer = require("nodemailer");
-const randtoken = require("rand-token");
+const randtoken = require('rand-token');
 
 const readFileAsync = util.promisify(fs.readFile);
 
@@ -92,7 +92,8 @@ router.post("/register", async (req, res) => {
   };
   const agee = leeftijd(mydate);
 
-  const token = randtoken.generate();
+  const token = randtoken.generate(20);
+  console.log(token);
   const hashpw = await bcrypt.hash(password, 10);
 
   if (usernameiu) {
@@ -200,8 +201,9 @@ router.get("/userdata/:id", async (req, res) => {
   });
 });
 
-router.post("/edituser/:id", async (req, res) => {
+router.post("/edituser/:id/:token", async (req, res) => {
   const id = req.params.id;
+  const token = req.params.token;
   const { passwordold, passwordnew, passwordnewrep, newusername, phonenumber } =
     req.body;
   console.log(req.body);
@@ -222,7 +224,7 @@ router.post("/edituser/:id", async (req, res) => {
       try {
         var resultpw = await Users.update(
           { password: hashpw },
-          { where: { id: id } }
+          { where: { id: id, token: token } }
         );
       } catch (err) {
         res.json({ error: err.message });
@@ -238,7 +240,7 @@ router.post("/edituser/:id", async (req, res) => {
       try {
         var resultun = await Users.update(
           { username: newusername },
-          { where: { id: id } }
+          { where: { id: id, token: token } }
         );
         res.json("success");
       } catch (err) {
@@ -258,7 +260,7 @@ router.post("/edituser/:id", async (req, res) => {
       try {
         var resultpn = await Users.update(
           { username: phonenumber },
-          { where: { id: id } }
+          { where: { id: id, token: token } }
         );
       } catch (err) {
         res.json({ error: err.message });
@@ -290,7 +292,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post("/editprofile/:id", upload.single("image"), async (req, res) => {
+router.post("/editprofile/:id/:token", upload.single("image"), async (req, res) => {
   const id = req.params.id;
   const { pfp, bio, filetype } = req.body;
   console.log(bio);
