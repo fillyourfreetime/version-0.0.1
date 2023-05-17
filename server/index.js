@@ -17,3 +17,4 @@ db.sequelize.sync().then(() => {
     console.log("server up on port 3001");
   });
 });
+   

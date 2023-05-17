@@ -2,6 +2,7 @@
 import "./App.css";
 import React, { useState } from "react";
 import axios from "axios";
+require('dotenv').config()
 
 function App() {
   const [image, setImage] = useState("");
@@ -19,8 +20,9 @@ function App() {
     console.log('hello')
     console.log(image)
     console.log(formData)
+    console.log(process.env.EDIT_USERPROFILE)
     axios
-      .post("http://localhost:3001/users/editprofile/1", formData, {
+      .post(`${process.env.EDIT_USERPROFILE}/1`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

@@ -42,7 +42,12 @@ module.exports = (sequelize, DataTypes) => {
     token: {
       type: DataTypes.STRING,
       allowNull: false,
-    }
+    },
+    theme: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: "sytem",
+    },
   });
   //Users.associate = (models) => {
   //  Users.hasMany(models.Likes, {

@@ -8,7 +8,8 @@ const sharp = require("sharp");
 const fs = require("fs");
 const util = require("util");
 const nodemailer = require("nodemailer");
-const randtoken = require('rand-token');
+const randtoken = require("rand-token");
+const dotenv = require("dotenv").config();
 
 const readFileAsync = util.promisify(fs.readFile);
 
@@ -19,13 +20,13 @@ const sendEmail = (email, token) => {
   var mail = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "informaticasitethijmen@gmail.com",
-      pass: "fngsqbchazvycsxl",
+      user: process.env.EMAIL_VERIFICATION,
+      pass: process.env.EMAIL_PASSWORD,
     },
   });
 
   var mailOptions = {
-    from: "informaticasitethijmen@gmail.com",
+    from: process.env.EMAIL_VERIFICATION,
     to: email,
     subject: "Email verification",
     html:
@@ -45,7 +46,7 @@ const sendEmail = (email, token) => {
   });
 };
 
-const age = (age) => {
+const leeftijd = (age) => {
   const parts = age.split("-");
   var monthint = parseInt(parts[0]);
   var monthint = monthint + 1;
@@ -63,7 +64,7 @@ const age = (age) => {
 
   const agee = leeftijd(mydate);
 
-  return agee;
+  return { agee, mydate };
 };
 
 router.post("/register", async (req, res) => {
@@ -97,8 +98,8 @@ router.post("/register", async (req, res) => {
     var genderin = gender;
   }
 
-  const agee = age(age);
-
+  const { agee, mydate } = leeftijd(age);
+  console.log(mydate);
   const token = randtoken.generate(20);
   console.log(token);
   const hashpw = await bcrypt.hash(password, 10);
@@ -122,7 +123,7 @@ router.post("/register", async (req, res) => {
         password: hashpw,
         age: mydate,
         phonenumber: phonenumber,
-        emailverification: 1,
+        emailverification: 0,
         gender: genderin,
         token: token,
       });
@@ -173,11 +174,13 @@ router.post("/login", async (req, res) => {
   if (user) {
     bcrypt.compare(password, user.password).then((match) => {
       if (!match) res.json({ error: "password or username incorrect" });
+      else if (user.emailverification == 0) res.json({ error: "please verify email adress" });
       else res.json("login succesfull");
     });
   } else if (emailuser) {
     bcrypt.compare(password, emailuser.password).then((match) => {
       if (!match) res.json({ error: "password or username incorrect" });
+      else if (emailuser.emailverification == 0) res.json({ error: "please verify email adress" })
       else res.json("login succesfull");
     });
   }
@@ -299,93 +302,109 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post("/editprofile/:id/:token", upload.single("image"), async (req, res) => {
-  const id = req.params.id;
-  const { pfp, bio, filetype } = req.body;
-  console.log(bio);
-  console.log(req.body);
-  if (pfp && req.file) {
-    var imput = path.join(
-      __dirname,
-      "..",
-      "images/temp",
-      "pfp_" + id + "." + filetype
-    );
-    var output = path.join(__dirname, "..", "images/temp", id + "png.png");
-    var newimage = path.join(
-      __dirname,
-      "..",
-      "images/profile_pictures",
-      "pfp_" + id + ".png"
-    );
+router.post(
+  "/editprofile/:id",
+  upload.single("image"),
+  async (req, res) => {
+    const id = req.params.id;
+    const { pfp, bio, filetype } = req.body;
+    console.log(bio);
+    console.log(req.body);
+    if (pfp && req.file) {
+      var imput = path.join(
+        __dirname,
+        "..",
+        "images/temp",
+        "pfp_" + id + "." + filetype
+      );
+      var output = path.join(__dirname, "..", "images/temp", id + "png.png");
+      var newimage = path.join(
+        __dirname,
+        "..",
+        "images/profile_pictures",
+        "pfp_" + id + ".png"
+      );
+
+      try {
+        const metadata = await sharp(imput).metadata();
+        if (metadata.format != "png") {
+          await sharp(imput).toFormat("png", { palette: true }).toFile(output);
+        } else {
+          await sharp(imput).toFile(output);
+        }
+        if (metadata.height > metadata.width) {
+          var topcut = Math.round((metadata.height - metadata.width) / 2);
+          await sharp(imput)
+            .extract({
+              width: metadata.width,
+              height: metadata.width,
+              left: 0,
+              top: topcut,
+            })
+            .toFile(newimage);
+        } else if (metadata.height < metadata.width) {
+          var leftcut = Math.round((metadata.width - metadata.height) / 2);
+          console.log(leftcut);
+          await sharp(imput)
+            .extract({
+              width: metadata.height,
+              height: metadata.height,
+              left: leftcut,
+              top: 0,
+            })
+            .toFile(newimage);
+        }
+        const metadatanew = await sharp(newimage).metadata();
+        console.log(metadatanew);
+        var newpfp = "images/profile_pictures/pfp_" + id + ".png";
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    if (fs.existsSync(newimage)) {
+      var newpfp = "images/profile_pictures/pfp_" + id + ".png";
+    } else {
+      var newpfp = "images/profile_pictures/defualtpfp.jpg";
+    }
+    if (bio) {
+      var newbio = bio;
+    } else {
+      var oldbio = await Users.findOne({
+        where: { id: id },
+      });
+      var newbio = oldbio.bio;
+      console.log(newbio);
+    }
+
+    fs.unlink(imput, (err) => {
+      if (err) {
+        throw err;
+      }
+    });
+    fs.unlink(output, (err) => {
+      if (err) {
+        throw err;
+      }
+    });
 
     try {
-      const metadata = await sharp(imput).metadata();
-      if (metadata.format != "png") {
-        await sharp(imput).toFormat("png", { palette: true }).toFile(output);
-      } else {
-        await sharp(imput).toFile(output);
-      }
-      if (metadata.height > metadata.width) {
-        var topcut = Math.round((metadata.height - metadata.width) / 2);
-        await sharp(imput)
-          .extract({
-            width: metadata.width,
-            height: metadata.width,
-            left: 0,
-            top: topcut,
-          })
-          .toFile(newimage);
-      } else if (metadata.height < metadata.width) {
-        var leftcut = Math.round((metadata.width - metadata.height) / 2);
-        console.log(leftcut);
-        await sharp(imput)
-          .extract({
-            width: metadata.height,
-            height: metadata.height,
-            left: leftcut,
-            top: 0,
-          })
-          .toFile(newimage);
-      }
-      const metadatanew = await sharp(newimage).metadata();
-      console.log(metadatanew);
-      var newpfp = "images/profile_pictures/pfp_" + id + ".png";
-    } catch (error) {
-      console.log(error);
+      const result = await Users.update(
+        { pfp: newpfp, bio: newbio },
+        { where: { id: id } }
+      );
+      res.json("success");
+    } catch (err) {
+      res.json({ error: err.message });
     }
   }
-  if (fs.existsSync(newimage)) {
-    var newpfp = "images/profile_pictures/pfp_" + id + ".png";
-  } else {
-    var newpfp = "images/profile_pictures/defualtpfp.jpg";
-  }
-  if (bio) {
-    var newbio = bio;
-  } else {
-    var oldbio = await Users.findOne({
-      where: { id: id },
-    });
-    var newbio = oldbio.bio;
-    console.log(newbio);
-  }
+);
 
-  fs.unlink(imput, (err) => {
-    if (err) {
-      throw err;
-    }
-  });
-  fs.unlink(output, (err) => {
-    if (err) {
-      throw err;
-    }
-  });
+router.post("/settheme/:id", async (req, res) => {
+  const id = req.params.id;
+  const theme = req.body.theme;
 
   try {
-    const result = await Users.update(
-      { pfp: newpfp, bio: newbio },
-      { where: { id: id } }
-    );
+    const result = await Users.update({ theme: theme }, { where: { id: id } });
     res.json("success");
   } catch (err) {
     res.json({ error: err.message });
@@ -393,3 +412,4 @@ router.post("/editprofile/:id/:token", upload.single("image"), async (req, res) 
 });
 
 module.exports = router;
+ 
