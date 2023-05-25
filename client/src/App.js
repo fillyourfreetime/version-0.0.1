@@ -22,7 +22,7 @@ function App() {
     console.log(formData)
     console.log(process.env.EDIT_USERPROFILE)
     axios
-      .post(`${process.env.EDIT_USERPROFILE}/1`, formData, {
+      .post(`${process.env.EDIT_USERPROFILE}/1`, formData, {  
         headers: {
           "Content-Type": "multipart/form-data",
         },
