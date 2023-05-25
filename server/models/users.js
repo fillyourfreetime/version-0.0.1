@@ -49,13 +49,10 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: "sytem",
     },
   });
-  //Users.associate = (models) => {
-  //  Users.hasMany(models.Likes, {
-  //    onDelete: "cascade",
-  //  });
-  //  Users.hasMany(models.followers, {
-  //    onDelete:"cascade"
-  //  })
-  //};
+  Users.associate = (models) => {
+   Users.hasMany(models.posts, {
+     onDelete: "cascade",
+   });
+  };
   return Users;
 };
