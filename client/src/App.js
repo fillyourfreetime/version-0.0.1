@@ -20,9 +20,9 @@ function App() {
     console.log('hello')
     console.log(image)
     console.log(formData)
-    console.log(process.env.EDIT_USERPROFILE)
+    console.log(process.env.REACT_APP_EDIT_USERPROFILE)
     axios
-      .post(`${process.env.EDIT_USERPROFILE}/1`, formData, {  
+      .post(`${process.env.REACT_APP_EDIT_USERPROFILE}/1`, formData, {  
         headers: {
           "Content-Type": "multipart/form-data",
         },

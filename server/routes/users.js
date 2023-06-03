@@ -10,6 +10,7 @@ const util = require("util");
 const nodemailer = require("nodemailer");
 const randtoken = require("rand-token");
 const dotenv = require("dotenv").config();
+const { sign } = require("jsonwebtoken");
 
 const readFileAsync = util.promisify(fs.readFile);
 
@@ -173,15 +174,25 @@ router.post("/login", async (req, res) => {
   }
   if (user) {
     bcrypt.compare(password, user.password).then((match) => {
+      const accessToken = sign(
+        { username: user.username, id: user.id },
+        process.env.JWT_SECRET
+      );
       if (!match) res.json({ error: "password or username incorrect" });
-      else if (user.emailverification == 0) res.json({ error: "please verify email adress" });
-      else res.json("login succesfull");
+      else if (user.emailverification == 0)
+        res.json({ error: "please verify email adress" });
+      else res.json({ token: accessToken, username: username, id: user.id });
     });
   } else if (emailuser) {
     bcrypt.compare(password, emailuser.password).then((match) => {
+      const accessToken = sign(
+        { username: user.username, id: user.id },
+        process.env.JWT_SECRET
+      );
       if (!match) res.json({ error: "password or username incorrect" });
-      else if (emailuser.emailverification == 0) res.json({ error: "please verify email adress" })
-      else res.json("login succesfull");
+      else if (emailuser.emailverification == 0)
+        res.json({ error: "please verify email adress" });
+      else res.json({ token: accessToken, username: username, id: user.id });
     });
   }
 });
@@ -192,12 +203,12 @@ const getImageBase64 = async (filePath) => {
   return `data:image/png;base64,${buffer.toString("base64")}`;
 };
 
-router.get("/userdata/:id", async (req, res) => {
-  const id = req.params.id;
-  console.log(id);
+router.get("/userdata/:token", async (req, res) => {
+  const token = req.params.token;
+  console.log(token);
 
   const userinfo = await Users.findOne({
-    where: { id: id },
+    where: { token: token },
     attributes: { exclude: ["password", "emailverification"] },
   });
 
@@ -211,14 +222,13 @@ router.get("/userdata/:id", async (req, res) => {
   });
 });
 
-router.post("/edituser/:id/:token", async (req, res) => {
-  const id = req.params.id;
+router.post("/edituser/:token", async (req, res) => {
   const token = req.params.token;
   const { passwordold, passwordnew, passwordnewrep, newusername, phonenumber } =
     req.body;
   console.log(req.body);
 
-  const userinfo = await Users.findOne({ where: { id: id } });
+  const userinfo = await Users.findOne({ where: { token: token } });
 
   if (passwordold) {
     console.log(passwordold);
@@ -234,7 +244,7 @@ router.post("/edituser/:id/:token", async (req, res) => {
       try {
         var resultpw = await Users.update(
           { password: hashpw },
-          { where: { id: id, token: token } }
+          { where: { token: token } }
         );
       } catch (err) {
         res.json({ error: err.message });
@@ -250,7 +260,7 @@ router.post("/edituser/:id/:token", async (req, res) => {
       try {
         var resultun = await Users.update(
           { username: newusername },
-          { where: { id: id, token: token } }
+          { where: { token: token } }
         );
         res.json("success");
       } catch (err) {
@@ -270,7 +280,7 @@ router.post("/edituser/:id/:token", async (req, res) => {
       try {
         var resultpn = await Users.update(
           { username: phonenumber },
-          { where: { id: id, token: token } }
+          { where: { token: token } }
         );
       } catch (err) {
         res.json({ error: err.message });
@@ -302,109 +312,108 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post(
-  "/editprofile/:id",
-  upload.single("image"),
-  async (req, res) => {
-    const id = req.params.id;
-    const { pfp, bio, filetype } = req.body;
-    console.log(bio);
-    console.log(req.body);
-    if (pfp && req.file) {
-      var imput = path.join(
-        __dirname,
-        "..",
-        "images/temp",
-        "pfp_" + id + "." + filetype
-      );
-      var output = path.join(__dirname, "..", "images/temp", id + "png.png");
-      var newimage = path.join(
-        __dirname,
-        "..",
-        "images/profile_pictures",
-        "pfp_" + id + ".png"
-      );
-
-      try {
-        const metadata = await sharp(imput).metadata();
-        if (metadata.format != "png") {
-          await sharp(imput).toFormat("png", { palette: true }).toFile(output);
-        } else {
-          await sharp(imput).toFile(output);
-        }
-        if (metadata.height > metadata.width) {
-          var topcut = Math.round((metadata.height - metadata.width) / 2);
-          await sharp(imput)
-            .extract({
-              width: metadata.width,
-              height: metadata.width,
-              left: 0,
-              top: topcut,
-            })
-            .toFile(newimage);
-        } else if (metadata.height < metadata.width) {
-          var leftcut = Math.round((metadata.width - metadata.height) / 2);
-          console.log(leftcut);
-          await sharp(imput)
-            .extract({
-              width: metadata.height,
-              height: metadata.height,
-              left: leftcut,
-              top: 0,
-            })
-            .toFile(newimage);
-        }
-        const metadatanew = await sharp(newimage).metadata();
-        console.log(metadatanew);
-        var newpfp = "images/profile_pictures/pfp_" + id + ".png";
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    if (fs.existsSync(newimage)) {
-      var newpfp = "images/profile_pictures/pfp_" + id + ".png";
-    } else {
-      var newpfp = "images/profile_pictures/defualtpfp.jpg";
-    }
-    if (bio) {
-      var newbio = bio;
-    } else {
-      var oldbio = await Users.findOne({
-        where: { id: id },
-      });
-      var newbio = oldbio.bio;
-      console.log(newbio);
-    }
-
-    fs.unlink(imput, (err) => {
-      if (err) {
-        throw err;
-      }
-    });
-    fs.unlink(output, (err) => {
-      if (err) {
-        throw err;
-      }
-    });
+router.post("/editprofile/:id", upload.single("image"), async (req, res) => {
+  const id = req.params.id;
+  const { pfp, bio, filetype } = req.body;
+  console.log(bio);
+  console.log(req.body);
+  if (pfp && req.file) {
+    var imput = path.join(
+      __dirname,
+      "..",
+      "images/temp",
+      "pfp_" + id + "." + filetype
+    );
+    var output = path.join(__dirname, "..", "images/temp", id + "png.png");
+    var newimage = path.join(
+      __dirname,
+      "..",
+      "images/profile_pictures",
+      "pfp_" + id + ".png"
+    );
 
     try {
-      const result = await Users.update(
-        { pfp: newpfp, bio: newbio },
-        { where: { id: id } }
-      );
-      res.json("success");
-    } catch (err) {
-      res.json({ error: err.message });
+      const metadata = await sharp(imput).metadata();
+      if (metadata.format != "png") {
+        await sharp(imput).toFormat("png", { palette: true }).toFile(output);
+      } else {
+        await sharp(imput).toFile(output);
+      }
+      if (metadata.height > metadata.width) {
+        var topcut = Math.round((metadata.height - metadata.width) / 2);
+        await sharp(imput)
+          .extract({
+            width: metadata.width,
+            height: metadata.width,
+            left: 0,
+            top: topcut,
+          })
+          .toFile(newimage);
+      } else if (metadata.height < metadata.width) {
+        var leftcut = Math.round((metadata.width - metadata.height) / 2);
+        console.log(leftcut);
+        await sharp(imput)
+          .extract({
+            width: metadata.height,
+            height: metadata.height,
+            left: leftcut,
+            top: 0,
+          })
+          .toFile(newimage);
+      }
+      const metadatanew = await sharp(newimage).metadata();
+      console.log(metadatanew);
+      var newpfp = "images/profile_pictures/pfp_" + id + ".png";
+    } catch (error) {
+      console.log(error);
     }
   }
-);
+  if (fs.existsSync(newimage)) {
+    var newpfp = "images/profile_pictures/pfp_" + id + ".png";
+  } else {
+    var newpfp = "images/profile_pictures/defualtpfp.jpg";
+  }
+  if (bio) {
+    var newbio = bio;
+  } else {
+    var oldbio = await Users.findOne({
+      where: { id: id },
+    });
+    var newbio = oldbio.bio;
+    console.log(newbio);
+  }
 
-router.post("/settheme/:id", async (req, res) => {
-  const id = req.params.id;
+  fs.unlink(imput, (err) => {
+    if (err) {
+      throw err;
+    }
+  });
+  fs.unlink(output, (err) => {
+    if (err) {
+      throw err;
+    }
+  });
+
+  try {
+    const result = await Users.update(
+      { pfp: newpfp, bio: newbio },
+      { where: { id: id } }
+    );
+    res.json("success");
+  } catch (err) {
+    res.json({ error: err.message });
+  }
+});
+
+router.post("/settheme/:token", async (req, res) => {
+  const token = req.params.token;
   const theme = req.body.theme;
 
   try {
-    const result = await Users.update({ theme: theme }, { where: { id: id } });
+    const result = await Users.update(
+      { theme: theme },
+      { where: { token: token } }
+    );
     res.json("success");
   } catch (err) {
     res.json({ error: err.message });
@@ -412,4 +421,3 @@ router.post("/settheme/:id", async (req, res) => {
 });
 
 module.exports = router;
- 
