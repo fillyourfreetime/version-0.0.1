@@ -9,21 +9,18 @@ const storage = multer.diskStorage({
     cb(null, "images/temp");
   },
   filename: function (req, file, cb) {
-    const id = req.params.id;
+    const username = req.params.username;
     const extention = path.extname(file.originalname);
-    cb(null, `iamgepicture${id}` + extention);
+    cb(null, `imagepicture${username}` + extention);
   },
 });
 
 const upload = multer({ storage: storage });
 
-router.post("/newpost", validateToken,upload.single("image"), async (req, res) => {
+router.post("/newpost:username", validateToken,upload.single("image"), async (req, res) => {
   const { posttitle, posttext, postimage } = req.body;
   const username = req.user.username;
   const UserId = req.user.id;
-  if (postimage) {
-
-  }
   try {
     await Posts.create({
       posttitle: posttitle,
@@ -31,7 +28,12 @@ router.post("/newpost", validateToken,upload.single("image"), async (req, res) =
       username: username,
       UserId: UserId,
     });
-    res.json("post created successfully");
+    const metadata = await sharp(imput).metadata();
+      if (metadata.format != "png") {
+        await sharp(imput).toFormat("png", { palette: true }).toFile(output);
+      } else {
+        await sharp(imput).toFile(output);
+      }
   } catch (err) {
     res.json({ error: "something went wrong" });
   }
