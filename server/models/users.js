@@ -46,7 +46,12 @@ module.exports = (sequelize, DataTypes) => {
     theme: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: "sytem",
+      defaultValue: "system",
+    },
+    numberofposts: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: 0,
     },
   });
   Users.associate = (models) => {
