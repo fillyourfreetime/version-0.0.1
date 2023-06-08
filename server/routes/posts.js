@@ -44,7 +44,7 @@ router.post(
         __dirname,
         "..",
         "images/post_images",
-        "postimage_" + numberofposts + "." + "png.png"
+        `postimage_ ${numberofposts}_${UserId}.png.png`
       );
     }
     if (filetype != "png") {
@@ -59,19 +59,14 @@ router.post(
         { numberofposts: newNumberOfPosts },
         { where: { id: UserId } }
       );
-      await Posts.create({
-        posttitle: posttitle,
-        posttext: posttext,
-        username: username,
-        UserId: UserId,
-      });
+
       if (postimage) {
         await Posts.create({
           posttitle: posttitle,
           posttext: posttext,
           username: username,
           UserId: UserId,
-          postimage: "postimage_" + numberofposts + "." + "png.png",
+          postimage: `postimage_ ${numberofposts}_${UserId}.png.png`,
         });
       } else {
         await Posts.create({
@@ -87,6 +82,12 @@ router.post(
   }
 );
 
+const getImageBase64 = async (filePath) => {
+  const image = await readFileAsync(filePath);
+  const buffer = Buffer.from(image);
+  return `data:image/png;base64,${buffer.toString("base64")}`;
+};
+
 router.get("/allposts", async (req, res) => {
   try {
     const listofposts = await Posts.findAll();
@@ -101,7 +102,17 @@ router.get("/onepost:id", async (req, res) => {
   try {
     const post = await Posts.findOne({ where: { id: id } });
     if (post) {
-      res.json(post);
+      if (post.postimage) {
+        const imageURI = await getImageBase64(
+          path.join(__dirname, "..", post.postimage)
+        );
+        res.json({
+          post: post,
+          imageURI: imageURI,
+        });
+      } else {
+        res.json(post);
+      }
     } else {
       res.json({ error: "post not found" });
     }
