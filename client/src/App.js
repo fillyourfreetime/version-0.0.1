@@ -1,17 +1,39 @@
 //import logo from "./logo.svg";
 import "./App.css";
+import LoginPage from "./Pages/loginpage";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-require('dotenv').config()
+import "./App.css";
+import {
+  BrowserRouter as Router,
+  BrowserRouter,
+  Routes,
+  Route,
+  Link,
+} from "react-router-dom";
+import HomePage from "./Pages/HomePage";
+import Post from "./Pages/post";
+import Registration from "./Pages/RegistrationPage"
+require("dotenv").config();
 
 function App() {
-  useEffect (() => {
-    console.log(process.env.REACT_APP_GET_ALL_POSTS)
-    axios.get(process.env.REACT_APP_GET_ALL_POSTS).then((response) => {
-      console.log(response);
-    })
-  }, []) // weet ik veel, ik gebruik nog steeds ff die pedro gast om me te helpen een beetje ooh oof maakt nie uit
-  return <div className="App"></div>;
+  return (
+    <div className="App">
+      <BrowserRouter>
+        <div className="navbar">
+          <Link to="/"> HomePage</Link>
+          <Link to="/login"> Login </Link>
+          <Link to="/registration"> Registration </Link>
+        </div>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/post/:id" element={<Post/>} />
+          <Route path="/registration" element={<Registration/>} />
+        </Routes>
+      </BrowserRouter>
+    </div>
+  );
 
   // voor uploaden van afbeeldingen
   // const [image, setImage] = useState("");
@@ -31,7 +53,7 @@ function App() {
   //   console.log(formData)
   //   console.log(process.env.REACT_APP_EDIT_USERPROFILE)
   //   axios
-  //     .post(`${process.env.REACT_APP_EDIT_USERPROFILE}/1`, formData, {  
+  //     .post(`${process.env.REACT_APP_EDIT_USERPROFILE}/1`, formData, {
   //       headers: {
   //         "Content-Type": "multipart/form-data",
   //       },

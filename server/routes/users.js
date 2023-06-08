@@ -77,7 +77,6 @@ router.post("/register", async (req, res) => {
     age,
     phonenumber,
     gender,
-    othergender,
   } = req.body;
   console.log(req.body);
   const usernameiu = await Users.findOne({
@@ -92,11 +91,6 @@ router.post("/register", async (req, res) => {
     var phonenumeriu = await Users.findOne({
       where: { phonenumber: phonenumber },
     });
-  }
-  if (!gender) {
-    var genderin = othergender;
-  } else {
-    var genderin = gender;
   }
 
   const { agee, mydate } = leeftijd(age);
@@ -125,7 +119,7 @@ router.post("/register", async (req, res) => {
         age: mydate,
         phonenumber: phonenumber,
         emailverification: 0,
-        gender: genderin,
+        gender: gender,
         token: token,
       });
       res.json("please check your email for verification");
@@ -161,15 +155,16 @@ router.post("/login", async (req, res) => {
   console.log(req.body);
   console.log(username);
 
-  const user = await Users.findOne({
+  var user = await Users.findOne({
     where: { username: username },
   });
   console.log(user);
-  const emailuser = await Users.findOne({
+  if (user==null) {var user = await Users.findOne({
     where: { email: username },
-  });
-  console.log(emailuser);
-  if (!user && !emailuser) {
+  });}
+  console.log(user);
+  //console.log(emailuser);
+  if (!user) {
     res.json({ error: "password or username incorrect" });
   }
   if (user) {
@@ -183,17 +178,17 @@ router.post("/login", async (req, res) => {
         res.json({ error: "please verify email adress" });
       else res.json({ token: accessToken, username: username, id: user.id });
     });
-  } else if (emailuser) {
-    bcrypt.compare(password, emailuser.password).then((match) => {
-      const accessToken = sign(
-        { username: user.username, id: user.id },
-        process.env.JWT_SECRET
-      );
-      if (!match) res.json({ error: "password or username incorrect" });
-      else if (emailuser.emailverification == 0)
-        res.json({ error: "please verify email adress" });
-      else res.json({ token: accessToken, username: username, id: user.id });
-    });
+  // } else if (emailuser) {
+  //   bcrypt.compare(password, emailuser.password).then((match) => {
+  //     const accessToken = sign(
+  //       { username: user.username, id: user.id },
+  //       process.env.JWT_SECRET
+  //     );
+  //     if (!match) res.json({ error: "password or username incorrect" });
+  //     else if (emailuser.emailverification == 0)
+  //       res.json({ error: "please verify email adress" });
+  //     else res.json({ token: accessToken, username: username, id: user.id });
+  //   });
   }
 });
 

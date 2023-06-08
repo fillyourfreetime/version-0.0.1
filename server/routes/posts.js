@@ -97,10 +97,12 @@ router.get("/allposts", async (req, res) => {
   }
 });
 
+
 router.get("/onepost:id", async (req, res) => {
   const id = req.params.id;
+  console.log(id);
   try {
-    const post = await Posts.findOne({ where: { id: id } });
+    const post = await Posts.findByPk(id);
     if (post) {
       if (post.postimage) {
         const imageURI = await getImageBase64(
