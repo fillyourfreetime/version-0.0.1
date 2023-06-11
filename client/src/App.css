@@ -1,37 +1,89 @@
 * {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 /** color variables */
-colors {
-    --color-primary-100: #4e65f5;
-    --color-primary-200: #6a75f7;
-    --color-primary-300: #8185f9;
-    --color-primary-400: #9695fa;
-    --color-primary-500: #a9a6fb;
-    --color-primary-600: #bbb7fd;
-    /** CSS DARK THEME SURFACE COLORS */
-    --color-surface-100: #121212;
-    --color-surface-200: #282828;
-    --color-surface-300: #3f3f3f;
-    --color-surface-400: #575757;
-    --color-surface-500: #717171;
-    --color-surface-600: #8b8b8b;
-    /** CSS DARK THEME MIXED SURFACE COLORS */
-    --color-surface-mixed-100: #29294e;
-    --color-surface-mixed-200: #3f3d60;
-    --color-surface-mixed-300: #555372;
-    --color-surface-mixed-400: #6b6985;
-    --color-surface-mixed-500: #838099;
-    --color-surface-mixed-600: #9a98ac;
-    /** EXAMPLES */
-    color: var(--color-primary-600);
-    background-color: var(--color-surface-300);
+:root {
+  --color-primary-100: #4e65f5;
+  --color-primary-200: #6a75f7;
+  --color-primary-300: #8185f9;
+  --color-primary-400: #9695fa;
+  --color-primary-500: #a9a6fb;
+  --color-primary-600: #bbb7fd;
+  /** CSS DARK THEME SURFACE COLORS */
+  --color-surface-100: #121212;
+  --color-surface-200: #282828;
+  --color-surface-300: #3f3f3f;
+  --color-surface-400: #575757;
+  --color-surface-500: #717171;
+  --color-surface-600: #8b8b8b;
+  /** CSS DARK THEME MIXED SURFACE COLORS */
+  --color-surface-mixed-100: #29294e;
+  --color-surface-mixed-200: #3f3d60;
+  --color-surface-mixed-300: #555372;
+  --color-surface-mixed-400: #6b6985;
+  --color-surface-mixed-500: #838099;
+  --color-surface-mixed-600: #9a98ac;
+}
+.App {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  background-color: var(--color-surface-100);
 }
 
-button {
-    color: var(--color-primary-100);
-    border-radius: 8px;
-    size: 100%;
+.submit-button {
+  background-color: var(--color-primary-500);
+  border-radius: 8px;
+  padding: 15px 32px;
+  color: var(--color-surface-200);
+  border: 2px solid var(--color-surface-200);
+  transition-duration: 0.4s;
+}
+
+.submit-button:hover {
+  box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24),
+    0 17px 50px 0 rgba(0, 0, 0, 0.19);
+}
+
+.inputregister {
+  width: 50%;
+  background-color: var(--color-surface-400);
+  border-radius: 8px;
+  border: 2px solid var(--color-surface-300);
+  /* color: var(--color-surface-300); */
+  font-size: 2vh;
+  height: 5vh;
+  width: 40vw;
+}
+.inputregister:focus {
+  outline: none;
+  border: 3px solid var(--color-primary-200);
+}
+
+select option {
+	color: black;
+}
+select option:first-child {
+	color: red;
+}
+select.empty {
+	color: red;
+}
+/* Hidden placeholder */
+select option[disabled]:first-child {
+    color:red;
+	display: none;
+}
+
+.formContainer {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  background-color: var(--color-surface-200);
+  width: 50vw;
+  border-radius: 15px;
 }

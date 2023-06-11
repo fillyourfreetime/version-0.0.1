@@ -8,15 +8,24 @@ function RegistrationPage() {
     username: "",
     password: "",
   };
-  const phoneRegExp =
-    /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+  const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
   const validationSchema = Yup.object().shape({
-    username: Yup.string().min(3).max(15).required(),
-    email: Yup.string().email().required(),
-    password: Yup.string().min(8).max(20).required(),
+    username: Yup.string()
+      .min(3)
+      .max(15)
+      .required(),
+    email: Yup.string()
+      .email()
+      .required(),
+    password: Yup.string()
+      .min(8)
+      .max(20)
+      .required(),
     birthdate: Yup.string().required(),
     gender: Yup.string().required(),
-    phonenumer: Yup.string().required().matches(phoneRegExp),
+    phonenumer: Yup.string()
+      .required()
+      .matches(phoneRegExp),
   });
 
   const onSubmit = (data) => {
@@ -26,60 +35,73 @@ function RegistrationPage() {
   };
 
   return (
-    <div>
+    <div class="app">
       <Formik
         initialValues={initialValues}
         onSubmit={onSubmit}
         validationSchema={validationSchema}
       >
         <Form className="formContainer">
-          <label>Username: </label>
+          <label class="registerlabel">Username: </label>
           <ErrorMessage name="username" component="span" />
           <Field
+            class="inputregister"
             autocomplete="off"
             id="inputCreatePost"
             name="username"
             placeholder="(Ex. John123...)"
           />
-          <label>Email: </label>
+          <br />
+          <label class="registerlabel">Email: </label>
           <ErrorMessage name="email" component="span" />
           <Field
+            class="inputregister"
             autocomplete="off"
             type="text"
             id="inputCreatePost"
             name="email"
             placeholder="Your email..."
           />
-          <label>Birthdate: </label>
+          <br />
+          <label class="registerlabel">Birthdate: </label>
           <ErrorMessage name="birthdate" component="span" />
           <Field
+            class="inputregister"
             autocomplete="off"
             type="date"
             id="inputCreatePost"
             name="birthdate"
             placeholder="Your Birthdate..."
           />
-          <label>Phonenumber: </label>
+          <br />
+          <label class="registerlabel">Phonenumber: </label>
           <ErrorMessage name="phonenumber" component="span" />
           <Field
+            class="inputregister"
             autocomplete="off"
             type="tel"
             id="inputCreatePost"
             name="phonenumber"
             placeholder="Your Phonenumber..."
           />
-          <label>emai: </label>
+          <br />
+          <label class="registerlabel">emai: </label>
           <ErrorMessage name="email" component="span" />
           <Field
+            class="inputregister"
             autocomplete="off"
             type="email"
             id="inputCreatePost"
             name="passwordrep"
             placeholder="Your Password..."
           />
-          <label>gender: </label>
+          <br />
+          <label class="registerlabel">gender: </label>
           <ErrorMessage name="email" component="span" />
-          <Field as="select" name="color">
+          <Field as="select" name="gender" class = "empty" >
+          <option value="" selected disabled>
+              gender
+            </option>
             <option value="male">male</option>
             <option value="female">female</option>
             <option value="Transgender Woman">Transgender Woman</option>
@@ -90,26 +112,33 @@ function RegistrationPage() {
             </option>
             <option value="Prefer not to state">Prefer not to state</option>
           </Field>
-          <label>Password: </label>
+          <br />
+          <label class="registerlabel">Password: </label>
           <ErrorMessage name="password" component="span" />
           <Field
+            class="inputregister"
             autocomplete="off"
             type="password"
             id="inputCreatePost"
             name="password"
             placeholder="Your Password..."
           />
-          <label>Repeat password: </label>
+          <br />
+          <label class="registerlabel">Repeat password: </label>
           <ErrorMessage name="password" component="span" />
           <Field
+            class="inputregister"
             autocomplete="off"
             type="password"
             id="inputCreatePost"
             name="passwordrep"
             placeholder="Your Password..."
           />
-
-          <button type="submit"> Register</button>
+          <br />
+          <button type="submit" class="submit-button">
+            {" "}
+            Register
+          </button>
         </Form>
       </Formik>
     </div>
