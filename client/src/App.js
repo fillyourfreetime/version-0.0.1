@@ -1,10 +1,10 @@
-import logo from "./logo.svg";
+//import logo from "./logo.svg";
 import "./App.css";
 import LoginPage from "./Pages/loginpage";
-import React, { useState, useEffect } from "react";
-import axios from "axios"; 
+import React from "react";
+//import axios from "axios"; 
 import {
-  BrowserRouter as Router,
+  //BrowserRouter as Router,
   BrowserRouter,
   Routes,
   Route,

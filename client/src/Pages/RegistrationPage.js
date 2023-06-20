@@ -7,6 +7,10 @@ function RegistrationPage() {
   const initialValues = {
     username: "",
     password: "",
+    email: "",
+    phonenumber: "",
+    passwordrep: "",
+    birthdate: "",
   };
   const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
   const validationSchema = Yup.object().shape({
@@ -21,85 +25,75 @@ function RegistrationPage() {
       .min(8)
       .max(20)
       .required(),
-    birthdate: Yup.string().required(),
-    gender: Yup.string().required(),
+    birthdate: Yup.string().required(), 
     phonenumer: Yup.string()
       .required()
       .matches(phoneRegExp),
+    passwordrep: Yup.string().required()
   });
 
+
   const onSubmit = (data) => {
-    axios.post(process.env.REACT_APP_REGISTER, data).then(() => {
+    axios.post("http://localhost:3001/users/register", data).then(() => {
       console.log(data);
     });
   };
 
   return (
-    <div class="app">
+    <div className="app">
       <Formik
         initialValues={initialValues}
-        onSubmit={onSubmit}
+        //onSubmit={onSubmit}
         validationSchema={validationSchema}
       >
         <Form className="formContainer">
-          <label class="registerlabel">Username: </label>
+          <label className="registerlabel">Username: </label>
           <ErrorMessage name="username" component="span" />
           <Field
-            class="inputregister"
-            autocomplete="off"
-            id="inputCreatePost"
+            className="inputregister"
+            autoComplete="off"
+            id="username"
             name="username"
             placeholder="(Ex. John123...)"
           />
           <br />
-          <label class="registerlabel">Email: </label>
+          <label className="registerlabel">Email: </label>
           <ErrorMessage name="email" component="span" />
           <Field
-            class="inputregister"
-            autocomplete="off"
+            className="inputregister"
+            autoComplete="off"
             type="text"
-            id="inputCreatePost"
+            id="email"
             name="email"
             placeholder="Your email..."
           />
           <br />
-          <label class="registerlabel">Birthdate: </label>
+          <label className="registerlabel">Birthdate: </label>
           <ErrorMessage name="birthdate" component="span" />
           <Field
-            class="inputregister"
-            autocomplete="off"
+            className="inputregister"
+            autoComplete="off"
             type="date"
-            id="inputCreatePost"
+            id="birthdate"
             name="birthdate"
             placeholder="Your Birthdate..."
           />
           <br />
-          <label class="registerlabel">Phonenumber: </label>
+          <label className="registerlabel">Phonenumber: </label>
           <ErrorMessage name="phonenumber" component="span" />
           <Field
-            class="inputregister"
-            autocomplete="off"
+            className="inputregister"
+            autoComplete="off"
             type="tel"
             id="inputCreatePost"
             name="phonenumber"
             placeholder="Your Phonenumber..."
           />
           <br />
-          <label class="registerlabel">emai: </label>
+          <label className="registerlabel">gender: </label>
           <ErrorMessage name="email" component="span" />
-          <Field
-            class="inputregister"
-            autocomplete="off"
-            type="email"
-            id="inputCreatePost"
-            name="passwordrep"
-            placeholder="Your Password..."
-          />
-          <br />
-          <label class="registerlabel">gender: </label>
-          <ErrorMessage name="email" component="span" />
-          <Field as="select" name="gender" class = "empty" >
-          <option value="" selected disabled>
+          <Field as="select" name="gender" className="inputregister">
+            <option value="" defaultValue>
               gender
             </option>
             <option value="male">male</option>
@@ -113,32 +107,29 @@ function RegistrationPage() {
             <option value="Prefer not to state">Prefer not to state</option>
           </Field>
           <br />
-          <label class="registerlabel">Password: </label>
+          <label className="registerlabel">Password: </label>
           <ErrorMessage name="password" component="span" />
           <Field
-            class="inputregister"
-            autocomplete="off"
+            className="inputregister"
+            autoComplete="off"
             type="password"
-            id="inputCreatePost"
+            id="password"
             name="password"
             placeholder="Your Password..."
           />
           <br />
-          <label class="registerlabel">Repeat password: </label>
+          <label className="registerlabel">Repeat password: </label>
           <ErrorMessage name="password" component="span" />
           <Field
-            class="inputregister"
-            autocomplete="off"
+            className="inputregister"
+            autoComplete="off"
             type="password"
-            id="inputCreatePost"
+            id="passwordrep"
             name="passwordrep"
             placeholder="Your Password..."
           />
           <br />
-          <button type="submit" class="submit-button">
-            {" "}
-            Register
-          </button>
+          <button type="submit" onClick={onSubmit}>Register</button>
         </Form>
       </Formik>
     </div>
