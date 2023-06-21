@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
-function post() {
+function Post() {
   let { id } = useParams();
   const [postObject, setPostObject] = useState({});
   useEffect(() => {
@@ -24,4 +24,4 @@ function post() {
   );
 }
 
-export default post;
+export default Post;

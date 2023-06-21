@@ -16,6 +16,7 @@
     "express": "^4.18.2",
     "express-fileupload": "^1.4.0",
     "fs": "^0.0.1-security",
+    "gh-pages": "^5.0.0",
     "gm": "^1.25.0",
     "image-to-uri": "^1.0.0",
     "jsonwebtoken": "^9.0.0",

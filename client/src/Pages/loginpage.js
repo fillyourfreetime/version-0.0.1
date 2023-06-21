@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-function loginpage() {
+function Loginpage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -31,4 +31,4 @@ function loginpage() {
   );
 }
 
-export default loginpage;
+export default Loginpage;

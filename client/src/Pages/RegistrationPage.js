@@ -35,7 +35,7 @@ function RegistrationPage() {
 
   const onSubmit = (data) => {
     axios.post("http://localhost:3001/users/register", data).then(() => {
-      console.log(data);
+      //console.log(data);
     });
   };
 
