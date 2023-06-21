@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/fillyourfreetime.com/static/css/main.7f1c1268.css",
+    "main.js": "/fillyourfreetime.com/static/js/main.f52bff76.js",
+    "static/js/787.c4e7f8f9.chunk.js": "/fillyourfreetime.com/static/js/787.c4e7f8f9.chunk.js",
+    "index.html": "/fillyourfreetime.com/index.html",
+    "main.7f1c1268.css.map": "/fillyourfreetime.com/static/css/main.7f1c1268.css.map",
+    "main.f52bff76.js.map": "/fillyourfreetime.com/static/js/main.f52bff76.js.map",
+    "787.c4e7f8f9.chunk.js.map": "/fillyourfreetime.com/static/js/787.c4e7f8f9.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.7f1c1268.css",
+    "static/js/main.f52bff76.js"
+  ]
+}
