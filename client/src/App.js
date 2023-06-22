@@ -13,6 +13,7 @@ import {
 import HomePage from "./Pages/HomePage";
 import Post from "./Pages/post";
 import Registration from "./Pages/RegistrationPage"
+import EmailVerification from "./Pages/EmailVerification"
 require("dotenv").config();
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/post/:id" element={<Post/>} />
           <Route path="/registration" element={<Registration/>} />
+          <Route path="/emailverification" element={<EmailVerification/>} />
         </Routes>
       </BrowserRouter>
     </div>

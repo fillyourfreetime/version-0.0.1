@@ -14,9 +14,10 @@ const { sign } = require("jsonwebtoken");
 
 const readFileAsync = util.promisify(fs.readFile);
 
-const sendEmail = (email, token) => {
+const sendEmail = (email, token, username) => {
   var email = email;
-  var token = token;
+  var tokens = token;
+  var username = username;
 
   var mail = nodemailer.createTransport({
     service: "gmail",
@@ -30,10 +31,17 @@ const sendEmail = (email, token) => {
     from: process.env.EMAIL_VERIFICATION,
     to: email,
     subject: "Email verification",
-    html:
-      '<p> use this <a href="http://localhost:3000/verify-email?token=' +
-      token +
-      '">link</a> to verify your email address</p>',
+    html: `
+      <html ⚡4email>
+        <head>
+          <meta charset="utf-8">
+        </head>
+        <body>
+        <h1>Dear ${username},</h1>
+        <p>You are registered with fillyourfreetime.com with this email adress. Please click the following link to verify this email adress</p>
+        <a href="https://localhost:3000/emailverification/${tokens}"> https://localhost:3000/emailverification/${tokens} </a>
+        </body>
+      </html>`,
   };
 
   mail.sendMail(mailOptions, function (error, info) {
@@ -69,15 +77,8 @@ const leeftijd = (age) => {
 };
 
 router.post("/register", async (req, res) => {
-  const {
-    username,
-    password,
-    passwordrep,
-    email,
-    age,
-    phonenumber,
-    gender,
-  } = req.body;
+  const { username, password, passwordrep, email, age, phonenumber, gender } =
+    req.body;
   console.log(req.body);
   const usernameiu = await Users.findOne({
     where: { username: username },
@@ -110,7 +111,7 @@ router.post("/register", async (req, res) => {
   } else if (password != passwordrep) {
     res.json({ error: "passwords are not the same" });
   } else {
-    const sent = sendEmail(email, token);
+    const sent = sendEmail(email, token, username);
     if (sent != 0) {
       Users.create({
         username: username,
@@ -129,8 +130,8 @@ router.post("/register", async (req, res) => {
   }
 });
 
-router.post("/emailregistration:token", async (req, res) => {
-  const token = req.params.token;
+router.post("/emailregistration", async (req, res) => {
+  const { token } = req.body;
 
   const userinfo = await Users.findOne({
     where: { token: token },
@@ -159,9 +160,11 @@ router.post("/login", async (req, res) => {
     where: { username: username },
   });
   console.log(user);
-  if (user==null) {var user = await Users.findOne({
-    where: { email: username },
-  });}
+  if (user == null) {
+    var user = await Users.findOne({
+      where: { email: username },
+    });
+  }
   console.log(user);
   //console.log(emailuser);
   if (!user) {
@@ -178,17 +181,17 @@ router.post("/login", async (req, res) => {
         res.json({ error: "please verify email adress" });
       else res.json({ token: accessToken, username: username, id: user.id });
     });
-  // } else if (emailuser) {
-  //   bcrypt.compare(password, emailuser.password).then((match) => {
-  //     const accessToken = sign(
-  //       { username: user.username, id: user.id },
-  //       process.env.JWT_SECRET
-  //     );
-  //     if (!match) res.json({ error: "password or username incorrect" });
-  //     else if (emailuser.emailverification == 0)
-  //       res.json({ error: "please verify email adress" });
-  //     else res.json({ token: accessToken, username: username, id: user.id });
-  //   });
+    // } else if (emailuser) {
+    //   bcrypt.compare(password, emailuser.password).then((match) => {
+    //     const accessToken = sign(
+    //       { username: user.username, id: user.id },
+    //       process.env.JWT_SECRET
+    //     );
+    //     if (!match) res.json({ error: "password or username incorrect" });
+    //     else if (emailuser.emailverification == 0)
+    //       res.json({ error: "please verify email adress" });
+    //     else res.json({ token: accessToken, username: username, id: user.id });
+    //   });
   }
 });
 
