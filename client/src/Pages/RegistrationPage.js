@@ -93,7 +93,7 @@ function RegistrationPage() {
           <label className="registerlabel">gender: </label>
           <ErrorMessage name="email" component="span" />
           <Field as="select" name="gender" className="inputregister">
-            <option value="" defaultValue>
+            <option value="" disabled selected hidden>
               gender
             </option>
             <option value="male">male</option>
@@ -129,7 +129,7 @@ function RegistrationPage() {
             placeholder="Your Password..."
           />
           <br />
-          <button type="submit" onClick={onSubmit}>Register</button>
+          <button type="submit" className="submit-button" onClick={onSubmit}>Register</button>
         </Form>
       </Formik>
     </div>

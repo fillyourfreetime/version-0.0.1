@@ -2,7 +2,7 @@
 import "./App.css";
 import LoginPage from "./Pages/loginpage";
 import React from "react";
-//import axios from "axios"; 
+//import axios from "axios";
 import {
   //BrowserRouter as Router,
   BrowserRouter,
@@ -12,8 +12,8 @@ import {
 } from "react-router-dom";
 import HomePage from "./Pages/HomePage";
 import Post from "./Pages/post";
-import Registration from "./Pages/RegistrationPage"
-import EmailVerification from "./Pages/EmailVerification"
+import Registration from "./Pages/RegistrationPage";
+import EmailVerification from "./Pages/EmailVerification";
 require("dotenv").config();
 
 function App() {
@@ -21,17 +21,17 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <div className="navbar">
-          <Link to="/"> HomePage</Link>
-          <Link to="/login"> Login </Link>
-          <Link to="/registration"> Registration </Link>
-        </div>
+            <Link to="/"> HomePage</Link>
+            <Link to="/login"> Login </Link>
+            <Link to="/registration"> Registration </Link>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/post/:id" element={<Post/>} />
-          <Route path="/registration" element={<Registration/>} />
-          <Route path="/emailverification" element={<EmailVerification/>} />
+          <Route path="/post/:id" element={<Post />} />
+          <Route path="/registration" element={<Registration />} />
+          <Route path="/emailverification" element={<EmailVerification />} />
         </Routes>
+      </div>
       </BrowserRouter>
     </div>
   );

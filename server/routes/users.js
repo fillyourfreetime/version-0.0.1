@@ -209,7 +209,7 @@ router.get("/userdata/:token", async (req, res) => {
     where: { token: token },
     attributes: { exclude: ["password", "emailverification"] },
   });
-
+  console.log(userinfo)
   const imageURI = await getImageBase64(
     path.join(__dirname, "..", userinfo.pfp)
   );
@@ -229,7 +229,6 @@ router.post("/edituser/:token", async (req, res) => {
   const userinfo = await Users.findOne({ where: { token: token } });
 
   if (passwordold) {
-    console.log(passwordold);
     await bcrypt.compare(passwordold, userinfo.password).then((match) => {
       if (!match) {
         res.json({ error: "old password is incorrect" });

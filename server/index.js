@@ -7,7 +7,7 @@ app.use(cors());
 
 const db = require("./models");
 
-app.use(express.static('images'));
+app.use(express.static("images"));
 
 const usersRouter = require("./routes/users");
 app.use("/users", usersRouter);
@@ -15,9 +15,11 @@ app.use("/users", usersRouter);
 const postsRouter = require("./routes/posts");
 app.use("/posts", postsRouter);
 
+const commentsRouter = require("./routes/comments");
+app.use("/comments", commentsRouter);
+
 db.sequelize.sync().then(() => {
-  app.listen(3001, () => {  
+  app.listen(3001, () => {
     console.log("server up on port 3001");
   });
 });
-   
