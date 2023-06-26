@@ -23,7 +23,8 @@ function App() {
         <div className="navbar">
             <Link to="/"> HomePage</Link>
             <Link to="/login"> Login </Link>
-            <Link to="/registration"> Registration </Link>
+            <Link to="/registration"> Registration </Link> 
+        </div>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -31,7 +32,7 @@ function App() {
           <Route path="/registration" element={<Registration />} />
           <Route path="/emailverification" element={<EmailVerification />} />
         </Routes>
-      </div>
+    
       </BrowserRouter>
     </div>
   );
