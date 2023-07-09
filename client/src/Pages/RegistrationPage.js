@@ -1,9 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 
 function RegistrationPage() {
+  const [username, setUsername] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [birthdate, setBirthdate] = useState("")
+  const [phonenumber, setPhonenumber] = useState("")
+  const [passwordrep, setPasswordrep] = useState("")
+  const [gender, setGender] = useState("")
+
   const initialValues = {
     username: "",
     password: "",
@@ -33,7 +41,8 @@ function RegistrationPage() {
   });
 
 
-  const onSubmit = (data) => {
+  const onSubmit = () => {
+    const data = {username:username, email:email, password:password, birthdate:birthdate, phonenumber: phonenumber,password: password, passwordrep: passwordrep}
     axios.post("http://localhost:3001/users/register", data).then(() => {
       //console.log(data);
     });
@@ -49,50 +58,67 @@ function RegistrationPage() {
         <Form className="formContainer">
           <label className="registerlabel">Username: </label>
           <ErrorMessage name="username" component="span" />
-          <Field
+          <input
+            type="text"
             className="inputregister"
             autoComplete="off"
             id="username"
             name="username"
             placeholder="(Ex. John123...)"
+            onChange={(event) => {
+              setUsername(event.target.value)
+            }}
           />
           <br />
           <label className="registerlabel">Email: </label>
           <ErrorMessage name="email" component="span" />
-          <Field
+          <input
+            type="text"
             className="inputregister"
             autoComplete="off"
-            type="text"
             id="email"
             name="email"
             placeholder="Your email..."
+            onChange={(event) => {
+              setEmail(event.target.value)
+            }}
           />
           <br />
           <label className="registerlabel">Birthdate: </label>
           <ErrorMessage name="birthdate" component="span" />
-          <Field
+          <input
             className="inputregister"
             autoComplete="off"
             type="date"
             id="birthdate"
             name="birthdate"
             placeholder="Your Birthdate..."
+            onChange={(event) => {
+              setBirthdate(event.target.value)
+            }}
           />
           <br />
           <label className="registerlabel">Phonenumber: </label>
           <ErrorMessage name="phonenumber" component="span" />
-          <Field
+          <input
             className="inputregister"
             autoComplete="off"
             type="tel"
             id="inputCreatePost"
             name="phonenumber"
             placeholder="Your Phonenumber..."
+            onChange={(event) => {
+              setPhonenumber(event.target.value)
+            }}
           />
           <br />
           <label className="registerlabel">gender: </label>
           <ErrorMessage name="email" component="span" />
-          <Field as="select" name="gender" className="inputregister">
+          <input as="select" name="gender" className="inputregister"
+            onChange={(event) => {
+              setGender(event.target.value)
+            }}
+          >
             <option value="" disabled selected hidden>
               gender
             </option>
@@ -105,28 +131,34 @@ function RegistrationPage() {
               Agender/I don’t identify with any gender
             </option>
             <option value="Prefer not to state">Prefer not to state</option>
-          </Field>
+          </input>
           <br />
           <label className="registerlabel">Password: </label>
           <ErrorMessage name="password" component="span" />
-          <Field
+          <input
             className="inputregister"
             autoComplete="off"
             type="password"
             id="password"
             name="password"
             placeholder="Your Password..."
+            onChange={(event) => {
+              setPassword(event.target.value)
+            }}
           />
           <br />
           <label className="registerlabel">Repeat password: </label>
           <ErrorMessage name="password" component="span" />
-          <Field
+          <input
             className="inputregister"
             autoComplete="off"
             type="password"
             id="passwordrep"
             name="passwordrep"
             placeholder="Your Password..."
+            onChange={(event) => {
+              setPasswordrep(event.target.value)
+            }}
           />
           <br />
           <button type="submit" className="submit-button" onClick={onSubmit}>Register</button>
