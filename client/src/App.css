@@ -83,3 +83,113 @@
   width: 50vw;
   border-radius: 15px;
 }
+
+.post {
+  width: 400px;
+  height: 300px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  margin-top: 50px;
+  border: 1px solid lightgray;
+  font-family: Arial, Helvetica, sans-serif;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 7px 29px 0px;
+}
+
+.post:hover{
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  cursor: pointer;
+}
+
+.post .card-header{
+  flex: 20%;
+  border-bottom: 1 px solid lightgray;
+  background-color: var(--color-primary-100);
+  display: grid;
+  place-content: center;
+  color: white;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.post .body{
+  flex: 60%;
+  display: grid;
+  place-content: center;
+  background-color: var(--color-surface-40);
+  color: white;
+}
+
+.post .footer{
+  flex: 20%;
+  border-top: 1px solid lightgray;
+  display: flex;
+  align-items: center;
+  padding-left: 15px;
+  background-color: var(--color-primary-100);
+  color: white;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.post .title{
+  flex: 20%;
+  border-bottom: 1 px solid lightgray;
+  background-color: var(--color-primary-100);
+  display: grid;
+  place-content: center;
+  color: white;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.createPostPage{
+  font-family: Arial, helvetica, sans-serif;
+  width: 100vw;
+  height: 70vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.formContainer{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 500px;
+  height: auto;
+  padding: 20px;
+  border: 5px solid var(--color-primary-100);
+  border-radius: 5px;
+  color: white;
+}
+
+.formContainer #inputCreatePost {
+  height: 40px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border: 2px solid grey;
+  border-radius: 5px;
+  padding-left: 10px;
+  font-size: 20px;
+  width: 485px;
+}
+
+.formContainer button {
+  margin-top: 15px;
+  height: 40px;
+  border: none;
+  background-color: var(--color-primary-200);
+  border-radius: 5px;
+  color: white;
+  width: 500px;
+}
+
+.formContainer button:hover {
+  cursor: pointer;
+  background-color: var(--color-primary-100);
+}
+
+span {
+  color: red;
+}

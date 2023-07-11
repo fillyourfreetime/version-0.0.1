@@ -9,6 +9,7 @@ function HomePage() {
 
   useEffect(() => {
     axios.get(process.env.REACT_APP_GET_ALL_POSTS).then((response) => {
+      console.log(response.data);
       setListOfPosts(response.data);
     });
     

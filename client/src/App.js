@@ -14,6 +14,7 @@ import HomePage from "./Pages/HomePage";
 import Post from "./Pages/post";
 import Registration from "./Pages/RegistrationPage";
 import EmailVerification from "./Pages/EmailVerification";
+import CreatePost from "./Pages/CreatePost";
 require("dotenv").config();
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <div className="navbar">
+            <Link to="/createpost">Create a post</Link>
             <Link to="/"> HomePage</Link>
             <Link to="/login"> Login </Link>
             <Link to="/registration"> Registration </Link> 
@@ -31,6 +33,7 @@ function App() {
           <Route path="/post/:id" element={<Post />} />
           <Route path="/registration" element={<Registration />} />
           <Route path="/emailverification" element={<EmailVerification />} />
+          <Route path="/createpost" element={<CreatePost />} />
         </Routes>
     
       </BrowserRouter>

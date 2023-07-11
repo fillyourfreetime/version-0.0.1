@@ -56,14 +56,18 @@ const sendEmail = (email, token, username) => {
 };
 
 const leeftijd = (age) => {
+  console.log(age);
   const parts = age.split("-");
-  var monthint = parseInt(parts[0]);
-  var monthint = monthint + 1;
+  var monthint = parseInt(parts[1]);
+  var monthint = monthint;
   const monthstr = monthint.toString();
-  parts[0] = monthstr;
-
+  parts[1] = monthstr;
+  console.log(parts);
+  console.log(parts[2]);
+  console.log(parts[1]);
+  console.log(parts[0]);
   const mydate = new Date(`${parts[2]}/${parts[1]}/${parts[0]}`);
-
+  console.log(mydate);
   const leeftijd = (mydate) => {
     var diff_ms = Date.now() - mydate.getTime();
     var age_dt = new Date(diff_ms);
@@ -77,55 +81,80 @@ const leeftijd = (age) => {
 };
 
 router.post("/register", async (req, res) => {
-  const { username, password, passwordrep, email, age, phonenumber, gender } =
-    req.body;
-  console.log(req.body);
-  const usernameiu = await Users.findOne({
-    where: { username: username },
-  });
-  const emailiu = await Users.findOne({
-    where: { email: email },
-  });
-
-  var phonenumeriu = null;
-  if (phonenumber) {
-    var phonenumeriu = await Users.findOne({
-      where: { phonenumber: phonenumber },
-    });
-  }
-
-  const { agee, mydate } = leeftijd(age);
-  console.log(mydate);
-  const token = randtoken.generate(20);
-  console.log(token);
-  const hashpw = await bcrypt.hash(password, 10);
-
-  if (usernameiu) {
-    res.json({ error: "username already in use" });
-  } else if (emailiu) {
-    res.json({ error: "email already in use" });
-  } else if (phonenumeriu) {
-    res.json({ error: "phone number already in use" });
-  } else if (agee < 13) {
-    res.json({ error: "you have to be atleast 13 or older to use the app" });
-  } else if (password != passwordrep) {
-    res.json({ error: "passwords are not the same" });
+  const {
+    username,
+    password,
+    passwordrep,
+    email,
+    birthdate,
+    phonenumber,
+    gender,
+  } = req.body;
+  if (
+    !username ||
+    !password ||
+    !passwordrep ||
+    !email ||
+    !birthdate ||
+    !phonenumber
+  ) {
+    res.json("data missing");
   } else {
-    const sent = sendEmail(email, token, username);
-    if (sent != 0) {
-      Users.create({
-        username: username,
-        email: email,
-        password: hashpw,
-        age: mydate,
-        phonenumber: phonenumber,
-        emailverification: 0,
-        gender: gender,
-        token: token,
+    console.log(req.body);
+    const usernameiu = await Users.findOne({
+      where: { username: username },
+    });
+    const emailiu = await Users.findOne({
+      where: { email: email },
+    });
+
+    var phonenumeriu = null;
+    if (phonenumber) {
+      var phonenumeriu = await Users.findOne({
+        where: { phonenumber: phonenumber },
       });
-      res.json("please check your email for verification");
+    }
+
+    const { agee, mydate } = leeftijd(birthdate);
+    console.log(mydate);
+    const token = randtoken.generate(20);
+    console.log(token);
+    const hashpw = await bcrypt.hash(password, 10);
+
+    if (usernameiu) {
+      console.log("no1");
+      res.json({ error: "username already in use" });
+    } else if (emailiu) {
+      console.log("no1");
+      res.json({ error: "email already in use" });
+    } else if (phonenumeriu) {
+      console.log("no1");
+      res.json({ error: "phone number already in use" });
+    } else if (agee < 13) {
+      console.log("no");
+      res.json({ error: "you have to be atleast 13 or older to use the app" });
+    } else if (password != passwordrep) {
+      console.log("no");
+      res.json({ error: "passwords are not the same" });
     } else {
-      res.json({ error: "please enter valid email" });
+      const sent = sendEmail(email, token, username);
+      if (sent != 0) {
+        Users.create({
+          username: username,
+          email: email,
+          password: hashpw,
+          age: mydate,
+          phonenumber: phonenumber,
+          emailverification: 0,
+          gender: gender,
+          token: token,
+        });
+        console.log("check");
+        res.json({ succes: "please check your email for verification" });
+      } else {
+        console.log("no");
+        res.json({ error: "please enter valid email" });
+      }
     }
   }
 });
@@ -209,7 +238,7 @@ router.get("/userdata/:token", async (req, res) => {
     where: { token: token },
     attributes: { exclude: ["password", "emailverification"] },
   });
-  console.log(userinfo)
+  console.log(userinfo);
   const imageURI = await getImageBase64(
     path.join(__dirname, "..", userinfo.pfp)
   );
