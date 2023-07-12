@@ -20,6 +20,7 @@ function CreatePost() {
         console.log(data);
         axios.post("http://localhost:3001/posts/newpost:username", data).then((response) => {
             console.log("KONTJES!!!!!!!!!!!");
+            console.log(response.data);
         });
     };
 
