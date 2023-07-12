@@ -8,7 +8,7 @@ function HomePage() {
   let navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(process.env.REACT_APP_GET_ALL_POSTS).then((response) => {
+    axios.get("https://server.fillyourfreetime.com/posts/allposts").then((response) => {
       console.log(response.data);
       setListOfPosts(response.data);
     });

@@ -3,7 +3,9 @@ const router = express.Router();
 const { Posts, users } = require("../models");
 const { validateToken } = require("../middlewares/AuthMiddleware");
 const multer = require("multer");
-
+var cors = require('cors');
+var app = express(); 
+app.use(cors());
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "images/temp");
