@@ -11,6 +11,7 @@ function RegistrationPage() {
   const [phonenumber, setPhonenumber] = useState("")
   const [passwordrep, setPasswordrep] = useState("")
   const [gender, setGender] = useState("")
+  const [postObject, setPostObject] = useState({});
 
   const initialValues = {
     username: "",
@@ -44,7 +45,11 @@ function RegistrationPage() {
   const onSubmit = () => {
     const data = {username:username, email:email, password:password, birthdate:birthdate, phonenumber: phonenumber,password: password, passwordrep: passwordrep, gender: "male"};
     console.log(data)
-    axios.post("http://localhost:3001/users/register", data).then((response) => {
+    axios.post("http://localhost:3001/users/register", data, {headers: { serveraccessToken: localStorage.getItem("serveraccessToken") }}).then((response) => {
+      if (response.data.error){
+        setPostObject(response.data.error);
+        console.log(response.data.error)
+      }else{setPostObject(response.data);}
       console.log(response.data);
     });
   };
@@ -163,6 +168,8 @@ function RegistrationPage() {
           />
           <br />
           <button type="submit" className="submit-button" onClick={onSubmit}>Register</button>
+          {postObject.error &&  <div class="error">{postObject.error}</div>}
+          {postObject.success &&  <div class="success">{postObject.success}</div>}
         </Form>
       </Formik>
     </div>

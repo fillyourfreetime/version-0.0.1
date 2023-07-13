@@ -10,7 +10,8 @@ const util = require("util");
 const nodemailer = require("nodemailer");
 const randtoken = require("rand-token");
 const dotenv = require("dotenv").config();
-const { sign } = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
+const { verifyuser, verifyserver } = require("../middlewares/AuthMiddleware");
 
 const readFileAsync = util.promisify(fs.readFile);
 
@@ -80,7 +81,8 @@ const leeftijd = (age) => {
   return { agee, mydate };
 };
 
-router.post("/register", async (req, res) => {
+router.post("/register",verifyserver, async (req, res) => {
+  console.log(req.body);
   const {
     username,
     password,
@@ -90,6 +92,7 @@ router.post("/register", async (req, res) => {
     phonenumber,
     gender,
   } = req.body;
+  console.log(req.body)
   if (
     !username ||
     !password ||
@@ -98,7 +101,7 @@ router.post("/register", async (req, res) => {
     !birthdate ||
     !phonenumber
   ) {
-    res.json("data missing");
+    res.json({error: "data missing"});
   } else {
     console.log(req.body);
     const usernameiu = await Users.findOne({
@@ -125,16 +128,16 @@ router.post("/register", async (req, res) => {
       console.log("no1");
       res.json({ error: "username already in use" });
     } else if (emailiu) {
-      console.log("no1");
+      console.log("no3");
       res.json({ error: "email already in use" });
     } else if (phonenumeriu) {
-      console.log("no1");
+      console.log("no3");
       res.json({ error: "phone number already in use" });
     } else if (agee < 13) {
-      console.log("no");
+      console.log("no4");
       res.json({ error: "you have to be atleast 13 or older to use the app" });
     } else if (password != passwordrep) {
-      console.log("no");
+      console.log("no5");
       res.json({ error: "passwords are not the same" });
     } else {
       const sent = sendEmail(email, token, username);
@@ -159,12 +162,12 @@ router.post("/register", async (req, res) => {
   }
 });
 
-router.post("/emailregistration", async (req, res) => {
+router.post("/emailregistration",verifyserver, async (req, res) => {
   const { token } = req.body;
 
   const userinfo = await Users.findOne({
     where: { token: token },
-    attributes: { exclude: ["password", "emailverification"] },
+    attributes: { exclude: ["password"] },
   });
 
   if (!userinfo) {
@@ -176,11 +179,11 @@ router.post("/emailregistration", async (req, res) => {
       { emailverification: 1 },
       { where: { token: token } }
     );
-    res.json("success");
+    res.json({success: "email verified successfully"});
   }
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login",verifyserver, async (req, res) => {
   const { username, password } = req.body;
   console.log(req.body);
   console.log(username);
@@ -201,14 +204,15 @@ router.post("/login", async (req, res) => {
   }
   if (user) {
     bcrypt.compare(password, user.password).then((match) => {
-      const accessToken = sign(
+      const accessToken = jwt.sign(
         { username: user.username, id: user.id },
-        process.env.JWT_SECRET
+        process.env.JWT_SECRET_USER
       );
+      console.log(accessToken);
       if (!match) res.json({ error: "password or username incorrect" });
       else if (user.emailverification == 0)
         res.json({ error: "please verify email adress" });
-      else res.json({ token: accessToken, username: username, id: user.id });
+      else res.json({succes: { token: accessToken, username: username, id: user.id }});
     });
     // } else if (emailuser) {
     //   bcrypt.compare(password, emailuser.password).then((match) => {
@@ -230,7 +234,7 @@ const getImageBase64 = async (filePath) => {
   return `data:image/png;base64,${buffer.toString("base64")}`;
 };
 
-router.get("/userdata/:token", async (req, res) => {
+router.get("/userdata/:token",verifyserver, async (req, res) => {
   const token = req.params.token;
   console.log(token);
 
@@ -243,13 +247,13 @@ router.get("/userdata/:token", async (req, res) => {
     path.join(__dirname, "..", userinfo.pfp)
   );
 
-  res.json({
+  res.json({succes:{
     userInfo: userinfo,
     imageURI: imageURI,
-  });
+  }});
 });
 
-router.post("/edituser/:token", async (req, res) => {
+router.post("/edituser/:token",verifyserver, async (req, res) => {
   const token = req.params.token;
   const { passwordold, passwordnew, passwordnewrep, newusername, phonenumber } =
     req.body;
@@ -338,7 +342,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post("/editprofile/:id", upload.single("image"), async (req, res) => {
+router.post("/editprofile/:id", upload.single("image"),verifyserver, async (req, res) => {
   const id = req.params.id;
   const { pfp, bio, filetype } = req.body;
   console.log(bio);
@@ -446,4 +450,8 @@ router.post("/settheme/:token", async (req, res) => {
   }
 });
 
+router.get("/loggedin", verifyuser, async (req, res) => {
+  res.json("success");
+})
+ 
 module.exports = router;

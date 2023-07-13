@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const { comments } = require("../models");
-const { validateToken } = require("../middlewares/AuthMiddleware");
+const { verifyuser } = require("../middlewares/AuthMiddleware");
 
-router.post("/createcomment", validateToken, async (req, res) => {
+router.post("/createcomment", verifyuser, async (req, res) => {
     const comment = req.body
     const UserId= req.user.id
     comment.UserId = UserId

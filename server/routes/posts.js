@@ -1,11 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const { Posts, users } = require("../models");
-const { validateToken } = require("../middlewares/AuthMiddleware");
+const { Posts, Users } = require("../models");
+const { verifyuser, verifyserver } = require("../middlewares/AuthMiddleware");
 const multer = require("multer");
-var cors = require('cors');
-var app = express(); 
+const sharp = require("sharp");
+var cors = require("cors");
+var app = express();
 app.use(cors());
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "images/temp");
@@ -25,59 +27,61 @@ const upload = multer({ storage: storage });
 
 router.post(
   "/newpost:username",
-  validateToken,
-  upload.single("image"),
+  verifyuser, verifyserver,
+  // upload.single("image"),
   async (req, res) => {
     const { posttitle, posttext, postimage, filetype } = req.body;
     const username = req.user.username;
     const UserId = req.user.id;
-    const numberofposts = await users.findOne({
+    var numberofposts = await Users.findOne({
       where: { id: UserId },
-      atributes: ["numberofpost"],
+      atributes: ["numberofpost", "username"],
     });
-    if (postimage) {
-      var imput = path.join(
-        __dirname,
-        "..",
-        "images/temp",
-        "postimage_" + numberofposts + "." + filetype
-      );
-      var output = path.join(
-        __dirname,
-        "..",
-        "images/post_images",
-        `postimage_ ${numberofposts}_${UserId}.png.png`
-      );
-    }
-    if (filetype != "png") {
-      await sharp(imput).toFormat("png", { palette: true }).toFile(output);
-    } else {
-      await sharp(imput).toFile(output);
-    }
+    // if (postimage) {
+    //   var imput = path.join(
+    //     __dirname,
+    //     "..",
+    //     "images/temp",
+    //     "postimage_" + numberofposts + "." + filetype
+    //   );
+    //   var output = path.join(
+    //     __dirname,
+    //     "..",
+    //     "images/post_images",
+    //     `postimage_ ${numberofposts}_${UserId}.png.png`
+    //   );
+    // }
+    // if (filetype != "png") {
+    //   await sharp(imput).toFormat("png", { palette: true }).toFile(output);
+    // } else {
+    //   await sharp(imput).toFile(output);
+    // }
 
     const newNumberOfPosts = (numberofposts += 1);
     try {
-      await users.update(
+      await Users.update(
         { numberofposts: newNumberOfPosts },
         { where: { id: UserId } }
       );
 
-      if (postimage) {
+      // if (postimage) {
+      //   await Posts.create({
+      //     posttitle: posttitle,
+      //     posttext: posttext,
+      //     username: username,
+      //     UserId: UserId,
+      //     postimage: `postimage_ ${numberofposts}_${UserId}.png.png`,
+      //   });
+      // } else {
         await Posts.create({
           posttitle: posttitle,
           posttext: posttext,
           username: username,
           UserId: UserId,
-          postimage: `postimage_ ${numberofposts}_${UserId}.png.png`,
+          Username: username,
         });
-      } else {
-        await Posts.create({
-          posttitle: posttitle,
-          posttext: posttext,
-          username: username,
-          UserId: UserId,
-        });
-      }
+        res.json({succses: "post successfully created"})
+      //}
     } catch (err) {
       res.json({ error: "something went wrong" });
     }
@@ -90,7 +94,7 @@ const getImageBase64 = async (filePath) => {
   return `data:image/png;base64,${buffer.toString("base64")}`;
 };
 
-router.get("/allposts", async (req, res) => {
+router.get("/allposts",verifyserver, async (req, res) => {
   try {
     const listofposts = await Posts.findAll();
     res.json(listofposts);
@@ -99,8 +103,7 @@ router.get("/allposts", async (req, res) => {
   }
 });
 
-
-router.get("/onepost:id", async (req, res) => {
+router.get("/onepost:id",verifyserver, async (req, res) => {
   const id = req.params.id;
   console.log(id);
   try {

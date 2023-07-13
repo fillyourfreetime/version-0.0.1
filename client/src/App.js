@@ -1,7 +1,7 @@
 //import logo from "./logo.svg";
 import "./App.css";
 import LoginPage from "./Pages/loginpage";
-import React from "react";
+import React, { useEffect, useState } from "react";
 //import axios from "axios";
 import {
   //BrowserRouter as Router,
@@ -15,28 +15,73 @@ import Post from "./Pages/post";
 import Registration from "./Pages/RegistrationPage";
 import EmailVerification from "./Pages/EmailVerification";
 import CreatePost from "./Pages/CreatePost";
+import Error404 from "./Pages/Error404";
+import axios from "axios";
+import { AuthContext } from "./helpers/AuthContext";
 require("dotenv").config();
 
 function App() {
+  const [authState, setAuthState] = useState(false);
+
+  useEffect(() => {
+    console.log(localStorage.getItem("useraccessToken"),);
+    const useraccessToken = localStorage.getItem("useraccessToken");
+    axios
+      .get("http://localhost:3001/users/loggedin", {
+        headers: { useraccessToken: useraccessToken},
+      })
+      .then((response) => {
+        console.log(response.data.error);
+        if (!response.data.error) {
+          setAuthState(true);
+        } else {
+          setAuthState(false);
+        }
+      });
+  }, []);
+
+  useEffect(() => {
+    const data = { pw: process.env.REACT_APP_PW };
+    axios.post(process.env.REACT_APP_GETOKEN, data).then((response) => {
+      localStorage.setItem("serveraccessToken", response.data);
+    });
+  }, []);
+
+const logout = () => {
+  localStorage.removeItem("useraccessToken");
+  setAuthState(false);
+};
+
   return (
     <div className="App">
-      <BrowserRouter>
-        <div className="navbar">
-            <Link to="/createpost">Create a post</Link>
+      <AuthContext.Provider value={{ authState, setAuthState }}>
+        <BrowserRouter>
+          <div className="navbar">
             <Link to="/"> HomePage</Link>
-            <Link to="/login"> Login </Link>
-            <Link to="/registration"> Registration </Link> 
-        </div>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/post/:id" element={<Post />} />
-          <Route path="/registration" element={<Registration />} />
-          <Route path="/emailverification" element={<EmailVerification />} />
-          <Route path="/createpost" element={<CreatePost />} />
-        </Routes>
-    
-      </BrowserRouter>
+            {authState && <Link to="/createpost">Create a post</Link>}
+            {!authState ? (
+              <div>
+                <Link to="/login"> Login </Link>
+                <Link to="/registration"> Registration </Link>
+              </div>
+            ) : (
+              <button onClick={logout}> Log out</button>
+            )}
+          </div>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/post/:id" element={<Post />} />
+            <Route path="/registration" element={<Registration />} />
+            <Route
+              path="/emailverification/:token"
+              element={<EmailVerification />}
+            />
+            <Route path="/createpost" element={<CreatePost />} />
+            <Route path="*" element={<Error404 />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthContext.Provider>
     </div>
   );
 

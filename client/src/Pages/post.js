@@ -7,17 +7,12 @@ function Post() {
   const [postObject, setPostObject] = useState({});
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
-
-  useEffect(() => {
-    axios.get(`${process.env.REACT_APP_EDIT_USERPROFILE}${id}`).then((response) => {
+  console.log(id)
+  useEffect( () => {
+    axios.get(`${process.env.REACT_APP_GET__POST}${id}`,{headers: { serveraccessToken: localStorage.getItem("serveraccessToken") }}).then((response) => {
       setPostObject(response.data);
     });
-
-    axios.get(`${process.env.REACT_APP_GET_COMMENT}${id}`).then((response) => {
-      setComments(response.data);
-    });
   }, []);
-
   const addComment = () => {
     axios.post(process.env.REACT_APP_COMMENT, {commentext: newComment, postid: id}).then((response) => {
       const commentToAdd = {commentext: newComment}
@@ -32,7 +27,7 @@ function Post() {
         <div className="post" id="individual">
           <div className="title"> {postObject.posttitle} </div>
           <div className="body">{postObject.posttext}</div>
-          <div className="footer">{postObject.UserId}</div>
+          <div className="footer">{postObject.username}</div>
         </div>
       </div>
       <div className="rightSide">
