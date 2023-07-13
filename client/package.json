@@ -23,7 +23,7 @@
     "react-dom": "^18.2.0",
     "react-router": "^6.11.0",
     "react-router-dom": "^6.11.0",
-    "react-scripts": "^1.1.5",
+    "react-scripts": "^4.0.3",
     "reactstrap": "^9.1.10",
     "web-vitals": "^2.1.4",
     "yup": "^1.2.0"
@@ -43,25 +43,18 @@
       "react-app/jest"
     ]
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
   "devDependencies": {
-    "@types/jquery": "^3.5.16",
-    "webpack-cli": "^5.1.4"
+    "@types/jquery": "^3.5.16"
   },
   "browser": {
     "fs": false,
     "os": false,
     "path": false
-  }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }
