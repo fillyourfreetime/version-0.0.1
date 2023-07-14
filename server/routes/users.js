@@ -40,7 +40,7 @@ const sendEmail = (email, token, username) => {
         <body>
         <h1>Dear ${username},</h1>
         <p>You are registered with fillyourfreetime.com with this email adress. Please click the following link to verify this email adress</p>
-        <a href="https://localhost:3000/emailverification/${tokens}"> https://localhost:3000/emailverification/${tokens} </a>
+        <a href="http://localhost:3000/emailverification/${tokens}"> http://localhost:3000/emailverification/${tokens} </a>
         </body>
       </html>`,
   };
@@ -81,7 +81,7 @@ const leeftijd = (age) => {
   return { agee, mydate };
 };
 
-router.post("/register",verifyserver, async (req, res) => {
+router.post("/register", verifyserver, async (req, res) => {
   console.log(req.body);
   const {
     username,
@@ -92,7 +92,7 @@ router.post("/register",verifyserver, async (req, res) => {
     phonenumber,
     gender,
   } = req.body;
-  console.log(req.body)
+  console.log(req.body);
   if (
     !username ||
     !password ||
@@ -101,7 +101,7 @@ router.post("/register",verifyserver, async (req, res) => {
     !birthdate ||
     !phonenumber
   ) {
-    res.json({error: "data missing"});
+    res.json({ error: "data missing" });
   } else {
     console.log(req.body);
     const usernameiu = await Users.findOne({
@@ -162,7 +162,7 @@ router.post("/register",verifyserver, async (req, res) => {
   }
 });
 
-router.post("/emailregistration",verifyserver, async (req, res) => {
+router.post("/emailregistration", verifyserver, async (req, res) => {
   const { token } = req.body;
 
   const userinfo = await Users.findOne({
@@ -179,11 +179,11 @@ router.post("/emailregistration",verifyserver, async (req, res) => {
       { emailverification: 1 },
       { where: { token: token } }
     );
-    res.json({success: "email verified successfully"});
+    res.json({ success: "email verified successfully" });
   }
 });
 
-router.post("/login",verifyserver, async (req, res) => {
+router.post("/login", verifyserver, async (req, res) => {
   const { username, password } = req.body;
   console.log(req.body);
   console.log(username);
@@ -191,13 +191,12 @@ router.post("/login",verifyserver, async (req, res) => {
   var user = await Users.findOne({
     where: { username: username },
   });
-  console.log(user);
   if (user == null) {
     var user = await Users.findOne({
       where: { email: username },
     });
   }
-  console.log(user);
+
   //console.log(emailuser);
   if (!user) {
     res.json({ error: "password or username incorrect" });
@@ -212,7 +211,10 @@ router.post("/login",verifyserver, async (req, res) => {
       if (!match) res.json({ error: "password or username incorrect" });
       else if (user.emailverification == 0)
         res.json({ error: "please verify email adress" });
-      else res.json({succes: { token: accessToken, username: username, id: user.id }});
+      else {console.log("success");
+      res.json({
+        succes: { token: accessToken, username: username, id: user.id },
+      });}
     });
     // } else if (emailuser) {
     //   bcrypt.compare(password, emailuser.password).then((match) => {
@@ -234,7 +236,7 @@ const getImageBase64 = async (filePath) => {
   return `data:image/png;base64,${buffer.toString("base64")}`;
 };
 
-router.get("/userdata/:token",verifyserver, async (req, res) => {
+router.get("/userdata/:token", verifyserver, async (req, res) => {
   const token = req.params.token;
   console.log(token);
 
@@ -247,13 +249,15 @@ router.get("/userdata/:token",verifyserver, async (req, res) => {
     path.join(__dirname, "..", userinfo.pfp)
   );
 
-  res.json({succes:{
-    userInfo: userinfo,
-    imageURI: imageURI,
-  }});
+  res.json({
+    succes: {
+      userInfo: userinfo,
+      imageURI: imageURI,
+    },
+  });
 });
 
-router.post("/edituser/:token",verifyserver, async (req, res) => {
+router.post("/edituser/:token", verifyserver, async (req, res) => {
   const token = req.params.token;
   const { passwordold, passwordnew, passwordnewrep, newusername, phonenumber } =
     req.body;
@@ -342,98 +346,103 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post("/editprofile/:id", upload.single("image"),verifyserver, async (req, res) => {
-  const id = req.params.id;
-  const { pfp, bio, filetype } = req.body;
-  console.log(bio);
-  console.log(req.body);
-  if (pfp && req.file) {
-    var imput = path.join(
-      __dirname,
-      "..",
-      "images/temp",
-      "pfp_" + id + "." + filetype
-    );
-    var output = path.join(__dirname, "..", "images/temp", id + "png.png");
-    var newimage = path.join(
-      __dirname,
-      "..",
-      "images/profile_pictures",
-      "pfp_" + id + ".png"
-    );
+router.post(
+  "/editprofile/:id",
+  upload.single("image"),
+  verifyserver,
+  async (req, res) => {
+    const id = req.params.id;
+    const { pfp, bio, filetype } = req.body;
+    console.log(bio);
+    console.log(req.body);
+    if (pfp && req.file) {
+      var imput = path.join(
+        __dirname,
+        "..",
+        "images/temp",
+        "pfp_" + id + "." + filetype
+      );
+      var output = path.join(__dirname, "..", "images/temp", id + "png.png");
+      var newimage = path.join(
+        __dirname,
+        "..",
+        "images/profile_pictures",
+        "pfp_" + id + ".png"
+      );
+
+      try {
+        const metadata = await sharp(imput).metadata();
+        if (metadata.format != "png") {
+          await sharp(imput).toFormat("png", { palette: true }).toFile(output);
+        } else {
+          await sharp(imput).toFile(output);
+        }
+        if (metadata.height > metadata.width) {
+          var topcut = Math.round((metadata.height - metadata.width) / 2);
+          await sharp(imput)
+            .extract({
+              width: metadata.width,
+              height: metadata.width,
+              left: 0,
+              top: topcut,
+            })
+            .toFile(newimage);
+        } else if (metadata.height < metadata.width) {
+          var leftcut = Math.round((metadata.width - metadata.height) / 2);
+          console.log(leftcut);
+          await sharp(imput)
+            .extract({
+              width: metadata.height,
+              height: metadata.height,
+              left: leftcut,
+              top: 0,
+            })
+            .toFile(newimage);
+        }
+        const metadatanew = await sharp(newimage).metadata();
+        console.log(metadatanew);
+        var newpfp = "images/profile_pictures/pfp_" + id + ".png";
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    if (fs.existsSync(newimage)) {
+      var newpfp = "images/profile_pictures/pfp_" + id + ".png";
+    } else {
+      var newpfp = "images/profile_pictures/defualtpfp.jpg";
+    }
+    if (bio) {
+      var newbio = bio;
+    } else {
+      var oldbio = await Users.findOne({
+        where: { id: id },
+      });
+      var newbio = oldbio.bio;
+      console.log(newbio);
+    }
+
+    fs.unlink(imput, (err) => {
+      if (err) {
+        throw err;
+      }
+    });
+    fs.unlink(output, (err) => {
+      if (err) {
+        throw err;
+      }
+    });
 
     try {
-      const metadata = await sharp(imput).metadata();
-      if (metadata.format != "png") {
-        await sharp(imput).toFormat("png", { palette: true }).toFile(output);
-      } else {
-        await sharp(imput).toFile(output);
-      }
-      if (metadata.height > metadata.width) {
-        var topcut = Math.round((metadata.height - metadata.width) / 2);
-        await sharp(imput)
-          .extract({
-            width: metadata.width,
-            height: metadata.width,
-            left: 0,
-            top: topcut,
-          })
-          .toFile(newimage);
-      } else if (metadata.height < metadata.width) {
-        var leftcut = Math.round((metadata.width - metadata.height) / 2);
-        console.log(leftcut);
-        await sharp(imput)
-          .extract({
-            width: metadata.height,
-            height: metadata.height,
-            left: leftcut,
-            top: 0,
-          })
-          .toFile(newimage);
-      }
-      const metadatanew = await sharp(newimage).metadata();
-      console.log(metadatanew);
-      var newpfp = "images/profile_pictures/pfp_" + id + ".png";
-    } catch (error) {
-      console.log(error);
+      const result = await Users.update(
+        { pfp: newpfp, bio: newbio },
+        { where: { id: id } }
+      );
+      res.json("success");
+    } catch (err) {
+      res.json({ error: err.message });
     }
   }
-  if (fs.existsSync(newimage)) {
-    var newpfp = "images/profile_pictures/pfp_" + id + ".png";
-  } else {
-    var newpfp = "images/profile_pictures/defualtpfp.jpg";
-  }
-  if (bio) {
-    var newbio = bio;
-  } else {
-    var oldbio = await Users.findOne({
-      where: { id: id },
-    });
-    var newbio = oldbio.bio;
-    console.log(newbio);
-  }
-
-  fs.unlink(imput, (err) => {
-    if (err) {
-      throw err;
-    }
-  });
-  fs.unlink(output, (err) => {
-    if (err) {
-      throw err;
-    }
-  });
-
-  try {
-    const result = await Users.update(
-      { pfp: newpfp, bio: newbio },
-      { where: { id: id } }
-    );
-    res.json("success");
-  } catch (err) {
-    res.json({ error: err.message });
-  }
-});
+);
 
 router.post("/settheme/:token", async (req, res) => {
   const token = req.params.token;
@@ -452,6 +461,6 @@ router.post("/settheme/:token", async (req, res) => {
 
 router.get("/loggedin", verifyuser, async (req, res) => {
   res.json("success");
-})
- 
+});
+
 module.exports = router;

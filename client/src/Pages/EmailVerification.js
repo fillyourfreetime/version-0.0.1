@@ -10,7 +10,7 @@ function EmailVerification() {
         axios.post("http://localhost:3001/users/emailregistration", token, {headers: { serveraccessToken: localStorage.getItem("serveraccessToken")}}).then((response) => {
           console.log(response.data);
           if (response.data.error){
-            setPostObject(response.data.error);
+            setPostObject(response.data);
             console.log(response.data.error)
           }else{setPostObject(response.data);}
           

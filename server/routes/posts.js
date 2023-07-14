@@ -27,7 +27,8 @@ const upload = multer({ storage: storage });
 
 router.post(
   "/newpost:username",
-  verifyuser, verifyserver,
+  verifyuser,
+  verifyserver,
   // upload.single("image"),
   async (req, res) => {
     const { posttitle, posttext, postimage, filetype } = req.body;
@@ -73,14 +74,14 @@ router.post(
       //     postimage: `postimage_ ${numberofposts}_${UserId}.png.png`,
       //   });
       // } else {
-        await Posts.create({
-          posttitle: posttitle,
-          posttext: posttext,
-          username: username,
-          UserId: UserId,
-          Username: username,
-        });
-        res.json({succses: "post successfully created"})
+      await Posts.create({
+        posttitle: posttitle,
+        posttext: posttext,
+        username: username,
+        UserId: UserId,
+        Username: username,
+      });
+      res.json({ succses: "post successfully created" });
       //}
     } catch (err) {
       res.json({ error: "something went wrong" });
@@ -94,21 +95,35 @@ const getImageBase64 = async (filePath) => {
   return `data:image/png;base64,${buffer.toString("base64")}`;
 };
 
-router.get("/allposts",verifyserver, async (req, res) => {
+router.get("/allposts", verifyserver, async (req, res) => {
+  var itemsProcessed = 0;
   try {
     const listofposts = await Posts.findAll();
-    res.json(listofposts);
+    console.log(listofposts.posts);
+    await listofposts.forEach(async (posts) => {
+      var user = await Users.findByPk(posts.dataValues.UserId);
+      posts.dataValues.username = user.username;
+      itemsProcessed++;
+      if (itemsProcessed == listofposts.length) {
+        console.log(listofposts, "hegafdg");
+        res.json(listofposts);
+      }
+    });
   } catch (err) {
     res.json({ error: "something went wrong" });
   }
 });
 
-router.get("/onepost:id",verifyserver, async (req, res) => {
+router.get("/onepost:id", verifyserver, async (req, res) => {
   const id = req.params.id;
   console.log(id);
+
   try {
     const post = await Posts.findByPk(id);
     if (post) {
+      var user = await Users.findByPk(post.UserId);
+      post.dataValues.username = user.username;
+      console.log(post);
       if (post.postimage) {
         const imageURI = await getImageBase64(
           path.join(__dirname, "..", post.postimage)
@@ -118,7 +133,7 @@ router.get("/onepost:id",verifyserver, async (req, res) => {
           imageURI: imageURI,
         });
       } else {
-        res.json(post);
+        res.json(post.dataValues);
       }
     } else {
       res.json({ error: "post not found" });

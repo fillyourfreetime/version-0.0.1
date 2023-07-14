@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function RegistrationPage() {
   const [username, setUsername] = useState("")
@@ -12,6 +13,8 @@ function RegistrationPage() {
   const [passwordrep, setPasswordrep] = useState("")
   const [gender, setGender] = useState("")
   const [postObject, setPostObject] = useState({});
+
+  let navigate = useNavigate();
 
   const initialValues = {
     username: "",
@@ -47,10 +50,11 @@ function RegistrationPage() {
     console.log(data)
     axios.post("http://localhost:3001/users/register", data, {headers: { serveraccessToken: localStorage.getItem("serveraccessToken") }}).then((response) => {
       if (response.data.error){
-        setPostObject(response.data.error);
-        console.log(response.data.error)
-      }else{setPostObject(response.data);}
-      console.log(response.data);
+        setPostObject(response.data);
+        console.log(response.data.error);
+      }else{setPostObject(response.data)
+        navigate("/registrationsuccess");
+      console.log(response.data);}
     });
   };
 
@@ -58,7 +62,6 @@ function RegistrationPage() {
     <div className="app">
       <Formik
         initialValues={initialValues}
-        //onSubmit={onSubmit}
         validationSchema={validationSchema}
       >
         <Form className="formContainer">
@@ -66,11 +69,6 @@ function RegistrationPage() {
           <ErrorMessage name="username" component="span" />
           <input
             type="text"
-            // className="inputregister"
-            // autoComplete="off"
-            // id="username"
-            // name="username"
-            // placeholder="(Ex. John123...)"
             onChange={(event) => {
               setUsername(event.target.value)
             }}
@@ -80,11 +78,6 @@ function RegistrationPage() {
           <ErrorMessage name="email" component="span" />
           <input
             type="text"
-            // className="inputregister"
-            // autoComplete="off"
-            // id="email"
-            // name="email"
-            // placeholder="Your email..."
             onChange={(event) => {
               setEmail(event.target.value)
             }}
@@ -93,12 +86,7 @@ function RegistrationPage() {
           <label className="registerlabel">Birthdate: </label>
           <ErrorMessage name="birthdate" component="span" />
           <input
-            // className="inputregister"
-            // autoComplete="off"
              type="date"
-            // id="birthdate"
-            // name="birthdate"
-            // placeholder="Your Birthdate..."
             onChange={(event) => {
               setBirthdate(event.target.value)
             }}
@@ -107,47 +95,16 @@ function RegistrationPage() {
           <label className="registerlabel">Phonenumber: </label>
           <ErrorMessage name="phonenumber" component="span" />
           <input
-            // className="inputregister"
-            // autoComplete="off"
             type="text"
-            // id="inputCreatePost"
-            // name="phonenumber"
-            // placeholder="Your Phonenumber..."
             onChange={(event) => {
               setPhonenumber(event.target.value)
             }}
           />
           <br />
-          {/* <label className="registerlabel">gender: </label>
-          <ErrorMessage name="email" component="span" /> */}
-          {/* <input as="select" name="gender" className="inputregister"
-            onChange={(event) => {
-              setGender(event.target.value)
-            }}
-          >
-            <option value="" disabled selected hidden>
-              gender
-            </option>
-            <option value="male">male</option>
-            <option value="female">female</option>
-            <option value="Transgender Woman">Transgender Woman</option>
-            <option value="Transgender Man">Transgender Man</option>
-            <option value="Non-Binary">Non-Binary</option>
-            <option value="Agender/I don’t identify with any gender ">
-              Agender/I don’t identify with any gender
-            </option>
-            <option value="Prefer not to state">Prefer not to state</option>
-          </input> */}
-          {/* <br /> */}
           <label className="registerlabel">Password: </label>
           <ErrorMessage name="password" component="span" />
           <input
-            // className="inputregister"
-            // autoComplete="off"
             type="password"
-            // id="password"
-            // name="password"
-            // placeholder="Your Password..."
             onChange={(event) => {
               setPassword(event.target.value)
             }}
@@ -156,20 +113,14 @@ function RegistrationPage() {
           <label className="registerlabel">Repeat password: </label>
           <ErrorMessage name="passwordrep" component="span" />
           <input
-            // className="inputregister"
-            // autoComplete="off"
              type="password"
-            // id="passwordrep"
-            // name="passwordrep"
-            // placeholder="Your Password..."
             onChange={(event) => {
               setPasswordrep(event.target.value)
             }}
           />
           <br />
+          <div className="error-message"> {postObject.error} </div>
           <button type="submit" className="submit-button" onClick={onSubmit}>Register</button>
-          {postObject.error &&  <div class="error">{postObject.error}</div>}
-          {postObject.success &&  <div class="success">{postObject.success}</div>}
         </Form>
       </Formik>
     </div>

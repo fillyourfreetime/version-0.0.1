@@ -14,6 +14,7 @@ import HomePage from "./Pages/HomePage";
 import Post from "./Pages/post";
 import Registration from "./Pages/RegistrationPage";
 import EmailVerification from "./Pages/EmailVerification";
+import EmailToken from "./Pages/EmailToken";
 import CreatePost from "./Pages/CreatePost";
 import Error404 from "./Pages/Error404";
 import axios from "axios";
@@ -22,35 +23,40 @@ require("dotenv").config();
 
 function App() {
   const [authState, setAuthState] = useState(false);
-
-  useEffect(() => {
-    console.log(localStorage.getItem("useraccessToken"),);
-    const useraccessToken = localStorage.getItem("useraccessToken");
-    axios
-      .get("http://localhost:3001/users/loggedin", {
-        headers: { useraccessToken: useraccessToken},
-      })
-      .then((response) => {
-        console.log(response.data.error);
-        if (!response.data.error) {
-          setAuthState(true);
-        } else {
-          setAuthState(false);
-        }
-      });
-  }, []);
-
   useEffect(() => {
     const data = { pw: process.env.REACT_APP_PW };
     axios.post(process.env.REACT_APP_GETOKEN, data).then((response) => {
+      console.log(response);
       localStorage.setItem("serveraccessToken", response.data);
     });
   }, []);
 
-const logout = () => {
-  localStorage.removeItem("useraccessToken");
-  setAuthState(false);
-};
+  useEffect(() => {
+    const useraccessToken = localStorage.getItem("useraccessToken");
+    if (useraccessToken != "undefined") {
+      axios
+        .get("http://localhost:3001/users/loggedin", {
+          headers: { useraccessToken: useraccessToken },
+        })
+        .then((response) => {
+          if (!response.data.error) {
+            setAuthState(true);
+          } else {
+            console.log("gadfgafd");
+            setAuthState(false);
+          }
+        });
+    } else {
+      setAuthState(false);
+    }
+
+    
+  }, []);
+
+  const logout = () => {
+    localStorage.removeItem("useraccessToken");
+    setAuthState(false);
+  };
 
   return (
     <div className="App">
@@ -77,6 +83,7 @@ const logout = () => {
               path="/emailverification/:token"
               element={<EmailVerification />}
             />
+            <Route path="/registrationsuccess" element={<EmailToken />} />
             <Route path="/createpost" element={<CreatePost />} />
             <Route path="*" element={<Error404 />} />
           </Routes>
