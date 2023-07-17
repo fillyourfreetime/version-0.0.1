@@ -98,7 +98,7 @@ const getImageBase64 = async (filePath) => {
 router.get("/allposts", verifyserver, async (req, res) => {
   var itemsProcessed = 0;
   try {
-    const listofposts = await Posts.findAll();
+    const listofposts = await Posts.findAll(); 
     console.log(listofposts.posts);
     await listofposts.forEach(async (posts) => {
       var user = await Users.findByPk(posts.dataValues.UserId);
