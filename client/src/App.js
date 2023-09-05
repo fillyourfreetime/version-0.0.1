@@ -2,7 +2,6 @@
 import "./App.css";
 import LoginPage from "./Pages/loginpage";
 import React, { useEffect, useState } from "react";
-//import axios from "axios";
 import {
   //BrowserRouter as Router,
   BrowserRouter,
@@ -21,41 +20,59 @@ import axios from "axios";
 import { AuthContext } from "./helpers/AuthContext";
 require("dotenv").config();
 
+const checkservertoken = (pw) => {
+  axios.post(process.env.REACT_APP_GETOKEN, pw).then((response) => {
+    if (response.error) {
+      console.log("server error");
+    } else {
+      localStorage.setItem("serveraccessToken", response.data);
+    }
+  });
+};
+
 function App() {
-  const [authState, setAuthState] = useState(false);
+  const [authState, setAuthState] = useState({
+    username: "",
+    id: 0,
+    status: false,
+  });
+
   useEffect(() => {
     const data = { pw: process.env.REACT_APP_PW };
-    axios.post(process.env.REACT_APP_GETOKEN, data).then((response) => {
-      console.log(response);
-      localStorage.setItem("serveraccessToken", response.data);
-    });
+    const serverAccessToken = localStorage.getItem("serveraccessToken");
+    if (!serverAccessToken) {
+      checkservertoken(data);
+    }
   }, []);
 
   useEffect(() => {
     const useraccessToken = localStorage.getItem("useraccessToken");
-    if (useraccessToken != "undefined") {
+    if (useraccessToken != null) {
       axios
         .get("http://localhost:3001/users/loggedin", {
           headers: { useraccessToken: useraccessToken },
         })
         .then((response) => {
-          if (!response.data.error) {
-            setAuthState(true);
+          if (response.data.error) {
+            setAuthState({ ...authState, status: false });
           } else {
-            console.log("gadfgafd");
-            setAuthState(false);
+            setAuthState({
+              username: response.data.username,
+              id: response.data.id,
+              status: true,
+            });
           }
         });
-    } else {
-      setAuthState(false);
-    }
 
-    
+    } else {
+      setAuthState({ ...authState, status: false });
+    }
   }, []);
 
   const logout = () => {
     localStorage.removeItem("useraccessToken");
     setAuthState(false);
+    window.location.reload(false);
   };
 
   return (
@@ -64,14 +81,16 @@ function App() {
         <BrowserRouter>
           <div className="navbar">
             <Link to="/"> HomePage</Link>
-            {authState && <Link to="/createpost">Create a post</Link>}
-            {!authState ? (
+            {!authState.status ? (
               <div>
                 <Link to="/login"> Login </Link>
                 <Link to="/registration"> Registration </Link>
               </div>
-            ) : (
-              <button onClick={logout}> Log out</button>
+            ) : (  
+              <div>
+                <Link to="/createpost">Create a post</Link>
+                <button type="button" onClick={logout}> Log out</button>  
+              </div>
             )}
           </div>
           <Routes>

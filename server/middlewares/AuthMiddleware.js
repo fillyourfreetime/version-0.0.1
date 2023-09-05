@@ -20,7 +20,6 @@ const verifyuser = (req, res, next) => {
 const verifyserver = (req, res, next) => {
   const accessTokenserver = req.header("serveraccessToken");
   if (!accessTokenserver) return res.json({ error: "You're not using the api please do not continue." });
-
   try {
     const validToken = verify(accessTokenserver, process.env.JWT_SECRET_SERVER);
     if (validToken) {

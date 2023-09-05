@@ -15,8 +15,12 @@ function HomePage() {
         },
       })
       .then((response) => {
-        console.log(response.data);
-        setListOfPosts(response.data);
+        if (response.error) {
+          console.log("server error");
+        } else {
+          console.log(response.data);
+          setListOfPosts(response.data);
+        }
       });
   }, []);
   return (

@@ -99,13 +99,11 @@ router.get("/allposts", verifyserver, async (req, res) => {
   var itemsProcessed = 0;
   try {
     const listofposts = await Posts.findAll(); 
-    console.log(listofposts.posts);
     await listofposts.forEach(async (posts) => {
       var user = await Users.findByPk(posts.dataValues.UserId);
       posts.dataValues.username = user.username;
       itemsProcessed++;
       if (itemsProcessed == listofposts.length) {
-        console.log(listofposts, "hegafdg");
         res.json(listofposts);
       }
     });

@@ -191,11 +191,11 @@ router.post("/login", verifyserver, async (req, res) => {
   var user = await Users.findOne({
     where: { username: username },
   });
-  if (user == null) {
-    var user = await Users.findOne({
-      where: { email: username },
-    });
-  }
+  // if (user == null) {
+  //   var user = await Users.findOne({
+  //     where: { email: username },
+  //   });
+  // }
 
   //console.log(emailuser);
   if (!user) {
@@ -211,10 +211,12 @@ router.post("/login", verifyserver, async (req, res) => {
       if (!match) res.json({ error: "password or username incorrect" });
       else if (user.emailverification == 0)
         res.json({ error: "please verify email adress" });
-      else {console.log("success");
-      res.json({
-        succes: { token: accessToken, username: username, id: user.id },
-      });}
+      else {
+        console.log("success");
+        res.json({
+          succes: { token: accessToken, username: username, id: user.id },
+        });
+      }
     });
     // } else if (emailuser) {
     //   bcrypt.compare(password, emailuser.password).then((match) => {
