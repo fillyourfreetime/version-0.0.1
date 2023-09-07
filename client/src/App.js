@@ -18,6 +18,7 @@ import CreatePost from "./Pages/CreatePost";
 import Error404 from "./Pages/Error404";
 import axios from "axios";
 import { AuthContext } from "./helpers/AuthContext";
+import Profile from "./Pages/Profile";
 require("dotenv").config();
 
 const checkservertoken = (pw) => {
@@ -104,6 +105,7 @@ function App() {
             />
             <Route path="/registrationsuccess" element={<EmailToken />} />
             <Route path="/createpost" element={<CreatePost />} />
+            <Route path="/profile/:id" element={<Profile />} />
             <Route path="*" element={<Error404 />} />
           </Routes>
         </BrowserRouter>

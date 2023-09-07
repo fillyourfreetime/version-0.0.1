@@ -49,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: "system",
     },
     numberofposts: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },

@@ -238,25 +238,22 @@ const getImageBase64 = async (filePath) => {
   return `data:image/png;base64,${buffer.toString("base64")}`;
 };
 
-router.get("/userdata/:token", verifyserver, async (req, res) => {
-  const token = req.params.token;
-  console.log(token);
+router.get("/userdata/:id", verifyserver, async (req, res) => {
+  const id = req.params.id;
+  console.log(id);
 
   const userinfo = await Users.findOne({
-    where: { token: token },
+    where: { id: id },
     attributes: { exclude: ["password", "emailverification"] },
   });
   console.log(userinfo);
   const imageURI = await getImageBase64(
     path.join(__dirname, "..", userinfo.pfp)
   );
+  userinfo.pfp = imageURI
 
-  res.json({
-    succes: {
-      userInfo: userinfo,
-      imageURI: imageURI,
-    },
-  });
+  res.json(userinfo
+  );
 });
 
 router.post("/edituser/:token", verifyserver, async (req, res) => {

@@ -6,6 +6,14 @@ import { useNavigate } from "react-router-dom";
 
 function CreatePost() {
   const [postObject, setPostObject] = useState({});
+  const [image, setImage] = useState("");
+  const [posttitle, setPosttitle] = useState("");
+  const [posttext, setPosttext] = useState("");
+
+  function handleImage(e) {
+    console.log(e.target.files);
+    setImage(e.target.files[0]);
+  }
   let navigate = useNavigate();
   const initialValues = {
     posttitle: "",
@@ -19,15 +27,27 @@ function CreatePost() {
     postImage: Yup.string().min(3).max(15).required("You must have a username"),
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = () => {
+    const formData = new FormData();
+    formData.append("posttitle", posttitle);
+    formData.append("posttext", posttext);
     const id = "temp";
+    if (image) {
+      formData.append("image", image);
+      console.log(image);
+      const filetype = image.name.split(".").pop();
+      formData.append("filetype", filetype);
+      formData.append("postimage", "yes");
+    }
     console.log(localStorage.getItem("useraccessToken"));
+    console.log(formData);
     const useraccessToken = localStorage.getItem("useraccessToken");
     axios
-      .post(`${process.env.REACT_APP_CREATE_POST}${id}`, data, {
+      .post(`${process.env.REACT_APP_CREATE_POST}${id}`, formData, {
         headers: {
           useraccessToken: useraccessToken,
           serveraccessToken: localStorage.getItem("serveraccessToken"),
+          "Content-Type": "multipart/form-data",
         },
       })
       .then((response) => {
@@ -43,41 +63,41 @@ function CreatePost() {
   };
 
   return (
-    <div className="createPostpage">
-      {postObject.error &&  <div class="error">{postObject.error}</div>}
-        {postObject.success &&  <div class="success">{postObject.success}</div>}
-      <Formik
-        initialValues={initialValues}
-        onSubmit={onSubmit}
-        validationSchema={validationSchema}
-      >
-        <Form className="formContainer">
-          <label>Title: </label>
+    <div className="app">
+      {postObject.error && <div class="error">{postObject.error}</div>}
+      {postObject.success && <div class="success">{postObject.success}</div>}
+      <Formik initialValues={initialValues} validationSchema={validationSchema}>
+        <Form class="form">
+          <p id="heading">create post</p>
           <ErrorMessage name="posttitle" component="span" />
-          <Field
+
+          <input
+            type="text"
             autocomplete="off"
-            id="inputCreatePost"
+            class="input-field"
             name="posttitle"
             placeholder="(Ex. Title...)"
+            onChange={(event) => {
+              setPosttitle(event.target.value);
+            }}
           />
-          <label>Post: </label>
           <ErrorMessage name="posttext" component="span" />
-          <Field
+          <br />
+          <input
+            type="text"
             autocomplete="off"
-            id="inputCreatePost"
+            class="input-field"
             name="posttext"
             placeholder="(Ex. Post...)"
+            onChange={(event) => {
+              setPosttext(event.target.value);
+            }}
           />
-          <label>Username: </label>
-          <ErrorMessage name="postImage" component="span" />
-          <Field
-            autocomplete="off"
-            id="inputCreatePost"
-            name="postImage"
-            placeholder="(Ex. Steve1999...)"
-          />
-
-          <button type="submit">Create post</button>
+          <br />
+          <input type="file" name="file" onChange={handleImage} />
+          <button type="button" className="submit-button" onClick={onSubmit}>
+            Create post
+          </button>
         </Form>
       </Formik>
     </div>
