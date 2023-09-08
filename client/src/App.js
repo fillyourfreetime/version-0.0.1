@@ -88,30 +88,34 @@ function App() {
           <div className="navbar">
             <Link to="/"> HomePage</Link>
             {!authState.status ? (
-              <div>
-                <Link to="/login"> Login </Link>
-                <Link to="/registration"> Registration </Link>
+              <div className="leftbar">
+                <div>
+                  <Link to="/login"> Login </Link>
+                  <Link to="/registration"> Registration </Link>
+                </div>
               </div>
             ) : (
               <div>
-                <Link to="/createpost">Create a post</Link>
+                <div>
+                  <Link to="/createpost">Create a post</Link>
+                </div>
+                <div class="rightbar">
+                  <div class="dropdown">
+                    <button class="dropbtn">
+                      <Image
+                        style={{ width: 35, height: 35, borderRadius: "50%" }}
+                        source={{
+                          uri: Userdata.pfp,
+                        }}
+                      />{" "}
+                      {Userdata.username}
+                    </button>
 
-                <div class="dropdown">
-                  <button class="dropbtn">
-                    
-                    <Image
-                      style={{ width: 35, height: 35, borderRadius: "50%" }}
-                      source={{
-                        uri: Userdata.pfp,
-                      }}
-                    />{" "}
-                    {Userdata.username}
-                  </button>
-
-                  <div class="dropdown-content">
-                    <Link to={`/profile/${Userdata.id}`}>profile</Link>
-                    <Link to="/">edit profile</Link>
-                    <Link onClick={logout}>logout</Link>
+                    <div class="dropdown-content">
+                      <Link to={`/profile/${Userdata.id}`}>profile</Link>
+                      <Link to="/">edit profile</Link>
+                      <Link onClick={logout}>logout</Link>
+                    </div>
                   </div>
                 </div>
               </div>
