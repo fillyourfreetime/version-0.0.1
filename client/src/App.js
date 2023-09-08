@@ -86,17 +86,18 @@ function App() {
       >
         <BrowserRouter>
           <div className="navbar">
-            <Link to="/"> HomePage</Link>
             {!authState.status ? (
-              <div className="leftbar">
-                <div>
+              <div>
+                <div class="leftbar">
                   <Link to="/login"> Login </Link>
                   <Link to="/registration"> Registration </Link>
                 </div>
+                <div class="rightbar"></div>
               </div>
             ) : (
               <div>
-                <div>
+                <div class="lefttbar">
+                  <Link to="/"> HomePage</Link>
                   <Link to="/createpost">Create a post</Link>
                 </div>
                 <div class="rightbar">

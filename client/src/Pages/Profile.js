@@ -8,11 +8,11 @@ function Profile() {
   const [username, setUsername] = useState("");
   const [listOfPosts, setListOfposts] = useState([]);
   const useraccessToken = localStorage.getItem("useraccessToken");
-  const [Upseracc, setUseracc] = useState()
+  const [Useracc, setUseracc] = useState()
 
   let navigate = useNavigate();
 
-  useEffect(() => {
+  useEffect( () => {
     axios
       .get(`${process.env.REACT_APP_GET_INFO}/${id}`, {
         headers: {
@@ -34,7 +34,7 @@ function Profile() {
         setListOfposts(response.data);
       });
       if (useraccessToken != null) {
-        axios
+         axios
           .get("http://localhost:3001/users/loggedin", {
             headers: { useraccessToken: useraccessToken },
           })
@@ -42,7 +42,7 @@ function Profile() {
             console.log(response.data);
             if (!response.data.error) {
               if(response.data.id == id) {
-                setUseracc(true``)
+                setUseracc(true)
               }
             } 
           });
@@ -59,7 +59,7 @@ function Profile() {
               uri: username.pfp,
             }}
           />
-          
+          {Useracc? <button onClick={() => {navigate('/')}}>edit profile</button> : <div></div>}
         </div>
       </div>
       <div className="listOfPosts">

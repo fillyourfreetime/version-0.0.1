@@ -37,23 +37,23 @@
 }
 
 .navbar {
+  width: 100%;
   flex-direction: row;
   align-items: center;
-  width: 100%;
   height: 70px;
   background-color: var(--color-surface-200);
   display: flex;
 }
 
-.rightbar {
+.navbar .rightbar {
   width: 50%;
-  display: flex;
+  display: grid;
   flex-direction: row;
 }
 
-.leftbar {
+.navbar .leftbar {
   width: 80%;
-  display: flex;
+  display: grid;
 }
 
 .navbar a {
