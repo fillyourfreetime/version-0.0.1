@@ -7,6 +7,8 @@ function Profile() {
   let { id } = useParams();
   const [username, setUsername] = useState("");
   const [listOfPosts, setListOfposts] = useState([]);
+  const useraccessToken = localStorage.getItem("useraccessToken");
+  const [Upseracc, setUseracc] = useState()
 
   let navigate = useNavigate();
 
@@ -31,6 +33,20 @@ function Profile() {
         console.log(response.data);
         setListOfposts(response.data);
       });
+      if (useraccessToken != null) {
+        axios
+          .get("http://localhost:3001/users/loggedin", {
+            headers: { useraccessToken: useraccessToken },
+          })
+          .then((response) => {
+            console.log(response.data);
+            if (!response.data.error) {
+              if(response.data.id == id) {
+                setUseracc(true``)
+              }
+            } 
+          });
+      }
   }, []);
   return (
     <div>
@@ -43,6 +59,7 @@ function Profile() {
               uri: username.pfp,
             }}
           />
+          
         </div>
       </div>
       <div className="listOfPosts">
