@@ -49,7 +49,7 @@ function Profile() {
         {listOfPosts.reverse().map((value, key) => {
           return (
             <div
-              className="post"
+            className={value.image ? "postImage" : "post"}
               onClick={() => {
                 navigate(`/post/${value.id}`);
               }}

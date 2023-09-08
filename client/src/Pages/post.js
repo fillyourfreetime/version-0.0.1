@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { View, Image, StyleSheet } from "react-native";
+import { Image } from "react-native";
+import { useNavigate } from "react-router-dom";
 
 function Post() {
   let { id } = useParams();
   const [postObject, setPostObject] = useState({});
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+
+  let navigate = useNavigate();
+
   useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_GET__POST}${id}`, {
@@ -36,21 +40,31 @@ function Post() {
   return (
     <div className="postPage">
       <div className="leftSide">
-        <div className="post" id="individual">
-          <div className="title"> {postObject.posttitle} </div>
+        <div
+          className={postObject.image ? "postImage" : "post"}
+          id={postObject.image ? "individualImage" : "individual"}
+        >
+          <div className="card-header"> {postObject.posttitle} </div>
           <div className="body">{postObject.posttext}</div>
           {postObject.image ? (
             <Image
-              style={{ width:"100%", height: 200 }}
+              style={{ width: "100%", height: 200 }}
               source={{
                 uri: postObject.image,
               }}
             />
           ) : (
-            <div></div>
+            <br />
           )}
+          <div
+            className="footer"
+            onClick={() => {
+              navigate(`/profile/${postObject.UserId}`);
+            }}
+          >
+            {postObject.username}
+          </div>
         </div>
-        <div className="footer">{postObject.username}</div>
         <div></div>
       </div>
       <div className="rightSide">

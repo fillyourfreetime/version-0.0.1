@@ -8,6 +8,7 @@ import {
   Routes,
   Route,
   Link,
+  useRouteLoaderData,
 } from "react-router-dom";
 import HomePage from "./Pages/HomePage";
 import Post from "./Pages/post";
@@ -19,6 +20,7 @@ import Error404 from "./Pages/Error404";
 import axios from "axios";
 import { AuthContext } from "./helpers/AuthContext";
 import Profile from "./Pages/Profile";
+import { Image } from "react-native";
 require("dotenv").config();
 
 const checkservertoken = (pw) => {
@@ -38,6 +40,8 @@ function App() {
     status: false,
   });
 
+  const [Userdata, setUserdata] = useState();
+
   useEffect(() => {
     const data = { pw: process.env.REACT_APP_PW };
     const serverAccessToken = localStorage.getItem("serveraccessToken");
@@ -54,17 +58,16 @@ function App() {
           headers: { useraccessToken: useraccessToken },
         })
         .then((response) => {
+          console.log(response.data);
           if (response.data.error) {
             setAuthState({ ...authState, status: false });
           } else {
             setAuthState({
-              username: response.data.username,
-              id: response.data.id,
               status: true,
             });
+            setUserdata(response.data);
           }
         });
-
     } else {
       setAuthState({ ...authState, status: false });
     }
@@ -78,7 +81,9 @@ function App() {
 
   return (
     <div className="App">
-      <AuthContext.Provider value={{ authState, setAuthState }}>
+      <AuthContext.Provider
+        value={{ authState, setAuthState, Userdata, setUserdata }}
+      >
         <BrowserRouter>
           <div className="navbar">
             <Link to="/"> HomePage</Link>
@@ -87,10 +92,28 @@ function App() {
                 <Link to="/login"> Login </Link>
                 <Link to="/registration"> Registration </Link>
               </div>
-            ) : (  
+            ) : (
               <div>
                 <Link to="/createpost">Create a post</Link>
-                <button type="button" onClick={logout}> Log out</button>  
+
+                <div class="dropdown">
+                  <button class="dropbtn">
+                    
+                    <Image
+                      style={{ width: 35, height: 35, borderRadius: "50%" }}
+                      source={{
+                        uri: Userdata.pfp,
+                      }}
+                    />{" "}
+                    {Userdata.username}
+                  </button>
+
+                  <div class="dropdown-content">
+                    <Link to={`/profile/${Userdata.id}`}>profile</Link>
+                    <Link to="/">edit profile</Link>
+                    <Link onClick={logout}>logout</Link>
+                  </div>
+                </div>
               </div>
             )}
           </div>

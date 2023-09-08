@@ -346,11 +346,11 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 router.post(
-  "/editprofile/:id",
+  "/editprofile",
   upload.single("image"),
-  verifyserver,
+  verifyserver, verifyuser,
   async (req, res) => {
-    const id = req.params.id;
+    const id = req.user.id;
     const { pfp, bio, filetype } = req.body;
     console.log(bio);
     console.log(req.body);
@@ -459,7 +459,17 @@ router.post("/settheme/:token", async (req, res) => {
 });
 
 router.get("/loggedin", verifyuser, async (req, res) => {
-  res.json("success");
+  const userinfo = await Users.findOne({
+    where: { id: req.user.id },
+    attributes: { exclude: ["password", "emailverification"] },
+  });
+  console.log(userinfo);
+  const imageURI = await getImageBase64(
+    path.join(__dirname, "..", userinfo.pfp)
+  );
+  userinfo.pfp = imageURI
+  console.log(userinfo)
+  res.json(userinfo);
 });
 
 module.exports = router;

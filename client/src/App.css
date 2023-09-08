@@ -29,7 +29,7 @@
 
 .App {
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -41,6 +41,7 @@
   height: 70px;
   background-color: var(--color-surface-200) ;
   display: flex;
+  flex-direction: row;
   align-items: center;
 }
 
@@ -91,6 +92,18 @@
 
 .post {
   width: 400px;
+  height: 300px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  margin-top: 50px;
+  border: 1px solid lightgray;
+  font-family: Arial, Helvetica, sans-serif;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 7px 29px 0px;
+}
+
+.postImage {
+  width: 400px;
   height: 500px;
   border-radius: 10px;
   display: flex;
@@ -105,6 +118,43 @@
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   cursor: pointer;
 }
+
+.postImage:hover{
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  cursor: pointer;
+}
+
+.postImage .card-header{
+  flex: 20%;
+  border-bottom: 1 px solid lightgray;
+  background-color: var(--color-primary-100);
+  display: grid;
+  place-content: center;
+  color: white;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.postImage .body{
+  flex: 60%;
+  display: grid;
+  place-content: center;
+  background-color: var(--color-surface-40);
+  color: white;
+}
+
+.postImage .footer{
+  flex: 20%;
+  border-top: 1px solid lightgray;
+  display: flex;
+  align-items: center;
+  padding-left: 15px;
+  background-color: var(--color-primary-100);
+  color: white;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
 
 .post .card-header{
   flex: 20%;
@@ -137,16 +187,6 @@
   border-bottom-right-radius: 10px;
 }
 
-.post .title{
-  flex: 20%;
-  border-bottom: 1 px solid lightgray;
-  background-color: var(--color-primary-100);
-  display: grid;
-  place-content: center;
-  color: white;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-}
 
 .createPostPage{
   font-family: Arial, helvetica, sans-serif;
@@ -222,15 +262,32 @@ span {
 
 #individual {
   height: 500px;
-  width: 600px;
+  width: 70%;
+}
+
+#individualImage {
+  height: 700px;
+  width: 70%;
 }
 
 #individual .title,
+
 #individual .footer {
   font-size: 30px;
 }
 
 #individual .body {
+  font-size: 25px;
+}
+
+
+#individualImage .title,
+
+#individualImage .footer {
+  font-size: 30px;
+}
+
+#individualImage .body {
   font-size: 25px;
 }
 
@@ -339,3 +396,47 @@ span {
   background-color: var(--color-primary-100);
   color: white;
 }
+
+/* Dropdown Button */
+.dropbtn {
+  display: flex;
+  background-color: var(--color-surface-200);
+  color: var(--color-primary-100);
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  align-items: center;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: var(--color-surface-200);}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {display: block;}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {background-color: var(--color-surface-200);}
