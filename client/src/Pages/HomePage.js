@@ -10,20 +10,23 @@ function HomePage() {
   let navigate = useNavigate();
 
   useEffect(() => {
-    axios
-      .get(process.env.REACT_APP_GET_ALL_POSTS, {
-        headers: {
-          serveraccessToken: localStorage.getItem("serveraccessToken"),
-        },
-      })
-      .then((response) => {
-        if (response.error) {
-          console.log("server error");
-        } else {
-          console.log(response.data);
-          setListOfPosts(response.data);
-        }
-      });
+    async function getposts() {
+       axios
+        .get(process.env.REACT_APP_GET_ALL_POSTS, {
+          headers: {
+            serveraccessToken: localStorage.getItem("serveraccessToken"),
+          },
+        })
+        .then((response) => {
+          if (response.error) {
+            console.log("server error");
+          } else {
+            console.log(response.data);
+            setListOfPosts(response.data);
+          }
+        });
+    }
+     getposts()
   }, []);
   return (
     <div>

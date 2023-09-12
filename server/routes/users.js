@@ -191,6 +191,10 @@ router.post("/login", verifyserver, async (req, res) => {
   var user = await Users.findOne({
     where: { username: username },
   });
+  const imageURI = await getImageBase64(
+    path.join(__dirname, "..", user.pfp)
+  );
+  user.pfp = imageURI
   // if (user == null) {
   //   var user = await Users.findOne({
   //     where: { email: username },
@@ -213,8 +217,9 @@ router.post("/login", verifyserver, async (req, res) => {
         res.json({ error: "please verify email adress" });
       else {
         console.log("success");
+        
         res.json({
-          succes: { token: accessToken, username: username, id: user.id },
+          succes: { token: accessToken, username: username, id: user.id, user: user},
         });
       }
     });

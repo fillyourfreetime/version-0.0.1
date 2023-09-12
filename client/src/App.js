@@ -18,13 +18,14 @@ import EmailToken from "./Pages/EmailToken";
 import CreatePost from "./Pages/CreatePost";
 import Error404 from "./Pages/Error404";
 import axios from "axios";
+import { userContext } from "./helpers/userContext";
 import { AuthContext } from "./helpers/AuthContext";
 import Profile from "./Pages/Profile";
 import { Image } from "react-native";
 require("dotenv").config();
 
-const checkservertoken = (pw) => {
-  axios.post(process.env.REACT_APP_GETOKEN, pw).then((response) => {
+const checkservertoken = async (pw) => {
+  await axios.post(process.env.REACT_APP_GETOKEN, pw).then((response) => {
     if (response.error) {
       console.log("server error");
     } else {
@@ -51,26 +52,28 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const useraccessToken = localStorage.getItem("useraccessToken");
-    if (useraccessToken != null) {
-      axios
-        .get("http://localhost:3001/users/loggedin", {
-          headers: { useraccessToken: useraccessToken },
-        })
-        .then((response) => {
-          console.log(response.data);
-          if (response.data.error) {
-            setAuthState({ ...authState, status: false });
-          } else {
-            setAuthState({
-              status: true,
-            });
-            setUserdata(response.data);
-          }
-        });
-    } else {
-      setAuthState({ ...authState, status: false });
+    async function isloggedIn() {
+      const useraccessToken = localStorage.getItem("useraccessToken");
+      if (useraccessToken != null) {
+        const response = await axios
+          .get("http://localhost:3001/users/loggedin", {
+            headers: { useraccessToken: useraccessToken },
+          })
+          
+            console.log(response.data);
+            if (response.data.error) {
+              setAuthState({ ...authState, status: false });
+            } else {
+              setAuthState({
+                status: true,
+              });
+              setUserdata(response.data);
+            }
+      } else {
+        setAuthState({ ...authState, status: false });
+      }
     }
+    isloggedIn();
   }, []);
 
   const logout = () => {
@@ -101,7 +104,7 @@ function App() {
                   <Link to="/createpost">Create a post</Link>
                 </div>
                 <div class="rightbar">
-                  <div class="dropdown">
+                  {Userdata ? (<div class="dropdown">
                     <button class="dropbtn">
                       <Image
                         style={{ width: 35, height: 35, borderRadius: "50%" }}
@@ -117,7 +120,7 @@ function App() {
                       <Link to="/">edit profile</Link>
                       <Link onClick={logout}>logout</Link>
                     </div>
-                  </div>
+                  </div>):(<div></div>)}
                 </div>
               </div>
             )}

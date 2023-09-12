@@ -8,6 +8,7 @@ function Loginpage() {
   const [password, setPassword] = useState("");
   const [postObject, setPostObject] = useState({});
   const { setAuthState } = useContext(AuthContext);
+  const { setUserdata } = useContext(AuthContext);
 
   let navigate = useNavigate();
 
@@ -30,10 +31,10 @@ function Loginpage() {
           console.log(response.data.succes);
           localStorage.setItem("useraccessToken", response.data.succes.token);
           setAuthState({
-            username: response.data.username,
-            id: response.data.id,
             status: true,
           });
+          console.log(response.data.succes.user)
+          setUserdata(response.data.succes.user);
           navigate("/");
         }
         console.log(response.data);
@@ -41,7 +42,7 @@ function Loginpage() {
   };
 
   if (localStorage.getItem("useraccessToken")) {
-    navigate("/")
+    navigate("/");
   }
 
   return (
