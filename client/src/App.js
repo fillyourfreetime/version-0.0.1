@@ -1,9 +1,7 @@
-//import logo from "./logo.svg";
 import "./App.css";
 import LoginPage from "./Pages/loginpage";
 import React, { useEffect, useState } from "react";
 import {
-  //BrowserRouter as Router,
   BrowserRouter,
   Routes,
   Route,
@@ -18,7 +16,6 @@ import EmailToken from "./Pages/EmailToken";
 import CreatePost from "./Pages/CreatePost";
 import Error404 from "./Pages/Error404";
 import axios from "axios";
-import { userContext } from "./helpers/userContext";
 import { AuthContext } from "./helpers/AuthContext";
 import Profile from "./Pages/Profile";
 import { Image } from "react-native";
@@ -140,43 +137,12 @@ function App() {
             <Route path="*" element={<Error404 />} />
           </Routes>
         </BrowserRouter>
+        <div class="footer">
+          <p class="footertext">&#169; 2023 fillourfreetime. All Rights Reserved </p>
+        </div>
       </AuthContext.Provider>
     </div>
   );
-
-  // voor uploaden van afbeeldingen
-  // const [image, setImage] = useState("");
-  // function handleImage(e) {
-  //   console.log(e.target.files);
-  //   setImage(e.target.files[0]);
-  // }
-  // function handleApi() {
-  //   const formData = new FormData();
-  //   formData.append("image", image);
-  //   formData.append("pfp", "yes");
-  //   const filetype = image.name.split('.').pop();
-
-  //   formData.append("filetype", filetype )
-  //   console.log('hello')
-  //   console.log(image)
-  //   console.log(formData)
-  //   console.log(process.env.REACT_APP_EDIT_USERPROFILE)
-  //   axios
-  //     .post(`${process.env.REACT_APP_EDIT_USERPROFILE}/1`, formData, {
-  //       headers: {
-  //         "Content-Type": "multipart/form-data",
-  //       },
-  //     })
-  //     .then((res) => {
-  //       console.log(res);
-  //     });
-  // }
-  // return (
-  //   <div>
-  //     <input type="file" name="file" onChange={handleImage} />
-  //     <button onClick={handleApi}>submit</button>
-  //   </div>
-  // );
 }
 
 export default App;
