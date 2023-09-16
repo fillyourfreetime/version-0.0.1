@@ -54,7 +54,7 @@ function Profile() {
         <div className="info">
           <h1> Username: {username.username} </h1>
           <Image
-            style={{ width: 400, height: 200 }}
+            style={{ width: 400, height: 200 }} 
             source={{
               uri: username.pfp,
             }}

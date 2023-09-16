@@ -48,7 +48,7 @@ function RegistrationPage() {
     };
     console.log(data);
     axios
-      .post("http://localhost:3001/users/register", data, {
+      .post(process.env.REACT_APP_REGISTER , data, {
         headers: {
           serveraccessToken: localStorage.getItem("serveraccessToken"),
         },

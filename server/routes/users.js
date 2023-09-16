@@ -261,7 +261,7 @@ router.get("/userdata/:id", verifyserver, async (req, res) => {
   );
 });
 
-router.post("/edituser/:token", verifyserver, async (req, res) => {
+router.post("/edituser",verifyuser, verifyserver, async (req, res) => {
   const token = req.params.token;
   const { passwordold, passwordnew, passwordnewrep, newusername, phonenumber } =
     req.body;
