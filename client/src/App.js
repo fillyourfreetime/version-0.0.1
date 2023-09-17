@@ -137,7 +137,7 @@ function App() {
             <Route path="*" element={<Error404 />} />
           </Routes>
         </BrowserRouter>
-        <div class="footer">
+        <div class="sitefooter">
           <p class="footertext">&#169; 2023 fillourfreetime. All Rights Reserved </p>
         </div>
       </AuthContext.Provider>

@@ -45,6 +45,14 @@
   display: flex;
 }
 
+.sitefooter {
+  width: 100vw;
+  align-items: center;
+  height: 70px;
+  background-color: var(--color-surface-200);
+  display: flex;
+}
+
 .navbar .rightbar {
   width: 50%;
   display: grid;
