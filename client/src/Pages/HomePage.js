@@ -11,7 +11,7 @@ function HomePage() {
 
   useEffect(() => {
     async function getposts() {
-       axios
+      axios
         .get(process.env.REACT_APP_GET_ALL_POSTS, {
           headers: {
             serveraccessToken: localStorage.getItem("serveraccessToken"),
@@ -26,7 +26,7 @@ function HomePage() {
           }
         });
     }
-     getposts()
+    getposts();
   }, []);
   return (
     <div>

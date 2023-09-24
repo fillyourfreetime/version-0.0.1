@@ -46,13 +46,49 @@
 }
 
 .sitefooter {
-  width: 100vw;
-  align-items: center;
-  height: 70px;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
   background-color: var(--color-surface-200);
+  height: 75px;
+  color: white;
   display: flex;
+  align-items: center;
 }
 
+.sitefooter p{
+  margin-left: 15px;
+}
+
+.info{
+  background-color: var(--color-primary-100);
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+
+.profile{
+  background-color: var(--color-primary-100);
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin-right: 20px;
+  margin-left: 70px;
+  margin-top: 10px;
+}
+
+span{
+  color: red;
+}
 .navbar .rightbar {
   width: 50%;
   display: grid;
@@ -61,7 +97,8 @@
 
 .navbar .leftbar {
   width: 80%;
-  display: grid;
+  display: flex;
+  align-items: center;
 }
 
 .navbar a {
@@ -251,8 +288,9 @@
   background-color: var(--color-primary-100);
 }
 
-span {
+.error-message {
   color: red;
+  margin-left: 85px;
 }
 
 .postPage {
@@ -414,7 +452,6 @@ span {
   display: flex;
   background-color: var(--color-surface-200);
   color: var(--color-primary-100);
-  padding: 16px;
   font-size: 16px;
   border: none;
   align-items: center;

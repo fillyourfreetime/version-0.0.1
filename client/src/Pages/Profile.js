@@ -53,13 +53,14 @@ function Profile() {
       <div className="profilePageContainer">
         <div className="info">
           <h1> Username: {username.username} </h1>
+          <p>{username.bio}</p>
           <Image
             style={{ width: 400, height: 200 }} 
             source={{
               uri: username.pfp,
             }}
           />
-          {Useracc? <button onClick={() => {navigate('/')}}>edit profile</button> : <div></div>}
+          {Useracc? <button onClick={() => {navigate("client/src/Pages/editpassword.js")}}>Edit your profile</button> : <div></div>}
         </div>
       </div>
       <div className="listOfPosts">

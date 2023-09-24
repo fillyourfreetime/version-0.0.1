@@ -191,10 +191,8 @@ router.post("/login", verifyserver, async (req, res) => {
   var user = await Users.findOne({
     where: { username: username },
   });
-  const imageURI = await getImageBase64(
-    path.join(__dirname, "..", user.pfp)
-  );
-  user.pfp = imageURI
+  console.log(user);
+
   // if (user == null) {
   //   var user = await Users.findOne({
   //     where: { email: username },
@@ -206,6 +204,8 @@ router.post("/login", verifyserver, async (req, res) => {
     res.json({ error: "password or username incorrect" });
   }
   if (user) {
+    const imageURI = await getImageBase64(path.join(__dirname, "..", user.pfp));
+    user.pfp = imageURI;
     bcrypt.compare(password, user.password).then((match) => {
       const accessToken = jwt.sign(
         { username: user.username, id: user.id },
@@ -217,9 +217,14 @@ router.post("/login", verifyserver, async (req, res) => {
         res.json({ error: "please verify email adress" });
       else {
         console.log("success");
-        
+
         res.json({
-          succes: { token: accessToken, username: username, id: user.id, user: user},
+          succes: {
+            token: accessToken,
+            username: username,
+            id: user.id,
+            user: user,
+          },
         });
       }
     });
@@ -255,13 +260,12 @@ router.get("/userdata/:id", verifyserver, async (req, res) => {
   const imageURI = await getImageBase64(
     path.join(__dirname, "..", userinfo.pfp)
   );
-  userinfo.pfp = imageURI
+  userinfo.pfp = imageURI;
 
-  res.json(userinfo
-  );
+  res.json(userinfo);
 });
 
-router.post("/edituser",verifyuser, verifyserver, async (req, res) => {
+router.post("/edituser", verifyuser, verifyserver, async (req, res) => {
   const token = req.params.token;
   const { passwordold, passwordnew, passwordnewrep, newusername, phonenumber } =
     req.body;
@@ -353,7 +357,8 @@ const upload = multer({ storage: storage });
 router.post(
   "/editprofile",
   upload.single("image"),
-  verifyserver, verifyuser,
+  verifyserver,
+  verifyuser,
   async (req, res) => {
     const id = req.user.id;
     const { pfp, bio, filetype } = req.body;
@@ -472,8 +477,8 @@ router.get("/loggedin", verifyuser, async (req, res) => {
   const imageURI = await getImageBase64(
     path.join(__dirname, "..", userinfo.pfp)
   );
-  userinfo.pfp = imageURI
-  console.log(userinfo)
+  userinfo.pfp = imageURI;
+  console.log(userinfo);
   res.json(userinfo);
 });
 

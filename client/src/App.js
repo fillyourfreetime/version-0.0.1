@@ -19,14 +19,18 @@ import axios from "axios";
 import { AuthContext } from "./helpers/AuthContext";
 import Profile from "./Pages/Profile";
 import { Image } from "react-native";
+import Editprofile from "./Pages/editprofile";
+import Editpassword from "./Pages/editpassword"
 require("dotenv").config();
 
 const checkservertoken = async (pw) => {
   await axios.post(process.env.REACT_APP_GETOKEN, pw).then((response) => {
     if (response.error) {
       console.log("server error");
+      window.location.reload(false);
     } else {
       localStorage.setItem("serveraccessToken", response.data);
+      window.location.reload(false);
     }
   });
 };
@@ -45,6 +49,14 @@ function App() {
     const serverAccessToken = localStorage.getItem("serveraccessToken");
     if (!serverAccessToken) {
       checkservertoken(data);
+    } else {
+      axios.get("http://localhost:3001/security/serveraccess", {
+        headers: { serverAccessToken: serverAccessToken},
+      }).then((response) => {
+        if (response.error) {
+          checkservertoken(data)
+        }
+      })
     }
   }, []);
 
@@ -114,7 +126,7 @@ function App() {
 
                     <div class="dropdown-content">
                       <Link to={`/profile/${Userdata.id}`}>profile</Link>
-                      <Link to="/">edit profile</Link>
+                      <Link to="/editprofile">edit profile</Link>
                       <Link onClick={logout}>logout</Link>
                     </div>
                   </div>):(<div></div>)}
@@ -134,6 +146,8 @@ function App() {
             <Route path="/registrationsuccess" element={<EmailToken />} />
             <Route path="/createpost" element={<CreatePost />} />
             <Route path="/profile/:id" element={<Profile />} />
+            <Route path="/editprofile" element={<Editprofile />} />
+            <Route path="/editaccountinfo" element={<Editpassword />} />
             <Route path="*" element={<Error404 />} />
           </Routes>
         </BrowserRouter>

@@ -36,7 +36,7 @@ router.post(
   upload.single("image"),
   async (req, res) => {
     console.log(req.body);
-    const { posttitle, posttext, postimage, filetype } = req.body;
+    const { posttitle, posttext, postimage, filetype } = req.body; 
     console.log(filetype);
     const username = req.user.username;
     const UserId = req.user.id;
@@ -56,7 +56,7 @@ router.post(
         __dirname,
         "..",
         "images/post_images",
-        `postimage_ ${newNumberOfPosts}_${UserId}.jpg.jpg`
+        `postimage_${newNumberOfPosts}_${UserId}_jpg.jpg`
       );
       if (filetype != "jpg") {
         console.log(imput);
@@ -69,16 +69,16 @@ router.post(
     try {
       await Users.update(
         { numberofposts: newNumberOfPosts },
-        { where: { id: UserId } }
+        { where: { id: UserId } } 
       );
 
       if (postimage) {
-        await Posts.create({
+        await Posts.create({ 
           posttitle: posttitle,
           posttext: posttext,
           username: username,
           UserId: UserId,
-          postImage: `post_images/postimage_ ${newNumberOfPosts}_${UserId}.jpg.jpg`,
+          postImage: `images/post_images/postimage_${newNumberOfPosts}_${UserId}_jpg.jpg`,
           numberofposts: newNumberOfPosts,
         });
       } else {
@@ -100,7 +100,7 @@ router.post(
 const readFileAsync = util.promisify(fs.readFile);
 
 const getImageBase64 = async (filePath) => {
-  const image = await readFileAsync(filePath);
+  const image = await readFileAsync(filePath); 
   const buffer = Buffer.from(image);
   return `data:image/png;base64,${buffer.toString("base64")}`;
 };

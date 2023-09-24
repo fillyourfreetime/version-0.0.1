@@ -22,6 +22,6 @@ router.get("/listofcomments:postid", async (req, res) => {
         console.log(err)
         res.json({errors: "something went wrong"})
     }
-})
+}) 
 
 module.exports = router;
