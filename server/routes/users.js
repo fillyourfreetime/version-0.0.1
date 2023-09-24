@@ -266,32 +266,34 @@ router.get("/userdata/:id", verifyserver, async (req, res) => {
 });
 
 router.post("/edituser", verifyuser, verifyserver, async (req, res) => {
-  const token = req.params.token;
-  const { passwordold, passwordnew, passwordnewrep, newusername, phonenumber } =
+  const id = req.user.id;
+  const { passwordold, passwordnew, passwordnewrep, newusername } =
     req.body;
-  console.log(req.body);
+  const errormessage = []
 
-  const userinfo = await Users.findOne({ where: { token: token } });
+  const userinfo = await Users.findOne({ where: { id: id } });
 
-  if (passwordold) {
+  if (passwordold && passwordnew && passwordnew) {
     await bcrypt.compare(passwordold, userinfo.password).then((match) => {
       if (!match) {
-        res.json({ error: "old password is incorrect" });
+        errormessage.push("old password is incorrect")
       }
     });
     if (passwordnew != passwordnewrep) {
-      res.json({ error: "passswors are not the same" });
+      errormessage.push("passswors are not the same")
     } else {
       const hashpw = await bcrypt.hash(passwordnew, 10);
       try {
         var resultpw = await Users.update(
           { password: hashpw },
-          { where: { token: token } }
+          { where: { id: id } }
         );
       } catch (err) {
-        res.json({ error: err.message });
+        errormessage.push(err.message);
       }
     }
+  } else if ((!passwordold || !passwordnew || !passwordnew) && (passwordold || passwordnew || passwordnew) ) {
+    errormessage.push("data missing")
   }
 
   if (newusername) {
@@ -302,42 +304,24 @@ router.post("/edituser", verifyuser, verifyserver, async (req, res) => {
       try {
         var resultun = await Users.update(
           { username: newusername },
-          { where: { token: token } }
+          { where: { id: id } }
         );
-        res.json("success");
       } catch (err) {
-        res.json({ error: err.message });
+        errormessage.push(err.message);
       }
     } else {
-      res.json({ error: "username is already in use" });
+      errormessage.push("username is already in use")
     }
   }
 
-  if (phonenumber) {
-    var phonenumeriu = await Users.findOne({
-      where: { phonenumber: phonenumber },
-    });
-
-    if (!phonenumeriu) {
-      try {
-        var resultpn = await Users.update(
-          { username: phonenumber },
-          { where: { token: token } }
-        );
-      } catch (err) {
-        res.json({ error: err.message });
-      }
-    } else {
-      res.json({ error: "phonenumber is already in use" });
-    }
-  }
 
   if (
     (resultpw || !passwordold) &&
-    (resultun || !newusername) &&
-    (resultpn || !phonenumber)
+    (resultun || !newusername) && (!errormessage)
   ) {
     res.json("success");
+  } else {
+    res.json(errormessage)
   }
 });
 
@@ -369,7 +353,7 @@ router.post(
         __dirname,
         "..",
         "images/temp",
-        "pfp_" + id + "." + filetype
+        `"pfp_${id}.${filetype}`
       );
       var output = path.join(__dirname, "..", "images/temp", id + "png.png");
       var newimage = path.join(
@@ -378,6 +362,7 @@ router.post(
         "images/profile_pictures",
         "pfp_" + id + ".png"
       );
+      console.log(typeof output);
 
       try {
         const metadata = await sharp(imput).metadata();

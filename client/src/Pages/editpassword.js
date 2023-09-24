@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Link } from "react-router-dom";
 import * as Yup from "yup";
 
 function editpassword() {
@@ -10,7 +11,7 @@ function editpassword() {
   const [passwordnewrep, setPasswordnewrep] = useState("");
   const [newusername, setNewusername] = useState("");
   const [Postobject, setPostObject] = useState("");
-  const [userdata, setUserdata] = useState("")
+  const [userdata, setUserdata] = useState("");
   const initialValues = {
     username: "",
     password: "",
@@ -18,9 +19,9 @@ function editpassword() {
     phonenumber: "",
   };
   const validationSchema = Yup.object().shape({
-    username: Yup.string().min(3).max(15).required(),
-    password: Yup.string().min(8).required(),
-    passwordrep: Yup.string().required(),
+    username: Yup.string().min(3).max(15),
+    password: Yup.string().min(8),
+    passwordrep: Yup.string(),
   });
   let navigate = useNavigate();
 
@@ -33,49 +34,62 @@ function editpassword() {
     };
 
     axios
-      .post(process.env.REACT_APP_EDIT_PROFILE , data, {
+      .post(process.env.REACT_APP_EDIT_PROFILE, data, {
         headers: {
           serveraccessToken: localStorage.getItem("serveraccessToken"),
-          useraccessToken: localStorage.getItem("useraccessToken")
+          useraccessToken: localStorage.getItem("useraccessToken"),
         },
       })
       .then((response) => {
+        console.log(response.data)
         if (response.data.error) {
           setPostObject(response.data);
           console.log(response.data.error);
         } else {
           setPostObject(response.data);
           console.log(response.data);
+          window.location.reload(false);
         }
       });
 
-      async function isloggedIn() {
-        const useraccessToken = localStorage.getItem("useraccessToken");
-        if (useraccessToken != null) {
-          const response = await axios
-            .get("http://localhost:3001/users/loggedin", {
-              headers: { useraccessToken: useraccessToken },
-            })
-            
-              console.log(response.data);
-              if (response.data.error) {
-                navigate("/");
-              } else {
-                setUserdata(response.data);
-              }
-        } else {
+    async function isloggedIn() {
+      const useraccessToken = localStorage.getItem("useraccessToken");
+      if (useraccessToken != null) {
+        const response = await axios.get(
+          "http://localhost:3001/users/loggedin",
+          {
+            headers: { useraccessToken: useraccessToken },
+          }
+        );
+
+        console.log(response.data);
+        if (response.data.error) {
           navigate("/");
+        } else {
+          setUserdata(response.data);
         }
+      } else {
+        navigate("/");
       }
-      isloggedIn();
-};
+    }
+    isloggedIn();
+  };
 
-
-  return <div>
-    <Formik>
-      <Form class = "form">
-        <p id = "heading">Edit your profile</p>
-        <div class="field">
+  return (
+    <div>
+      <div className="lefside">
+        <Link className="profile" to="/editprofile"> edit profile </Link>
+        <Link className="info" to="/editaccountinfo"> edit account info </Link>
+      </div>
+      <div className="rightside">
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={onSubmit}
+      >
+        <Form class="form">
+          <p id="heading">Edit your profile</p>
+          <div class="field">
             <svg
               class="input-icon"
               xmlns="http://www.w3.org/2000/svg"
@@ -88,46 +102,76 @@ function editpassword() {
             </svg>
             <input
               autoComplete="off"
-              placeholder="Username" 
+              placeholder="Username"
               class="input-field"
               type="text"
               onChange={(event) => {
                 setNewusername(event.target.value);
               }}
             ></input>
-        </div>
-        <div class="field">
-          <svg
-            class="input-icon"
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            viewBox="0 0 16 16"
-          >
-            <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"></path>
-          </svg>
-          <input
-            placeholder="old password"
-            class="input-field"
-            type="password"
-            onChange={(event) => {
-              setPasswordold(event.target.value);
-            }}
-          ></input>
-          <ErrorMessage name="passwordrep" component="span" />
-            <div class="field">
-              <Field
-                name="passwordrep"
-                type="password"
-                placeholder="repeat password"
-                class="input-field"
-              />
-            </div>
-        </div>
-      </Form>
-    </Formik>
-  </div>;
+          </div>
+          <div class="field">
+            <svg
+              class="input-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              viewBox="0 0 16 16"
+            >
+              <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"></path>
+            </svg>
+            <input
+              placeholder="old password"
+              class="input-field"
+              type="password"
+              onChange={(event) => {
+                setPasswordold(event.target.value);
+              }}
+            ></input>
+          </div>
+          <div class="field">
+            <svg
+              class="input-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"  
+              height="16"
+              fill="currentColor"
+              viewBox="0 0 16 16"
+            >
+              <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"></path>
+            </svg>
+            <input
+              placeholder="new password"
+              class="input-field"
+              type="password"
+            ></input>
+          </div>
+          <div class="field">
+            <svg
+              class="input-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              viewBox="0 0 16 16"
+            >
+              <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"></path>
+            </svg>
+            <input
+              placeholder="repeat new password"
+              class="input-field"
+              type="password"
+            ></input>
+          </div>
+          <button type="submit" className="submit-button">
+            edit account info
+          </button>
+        </Form>
+      </Formik>
+      </div>
+    </div>
+  );
 }
 
 export default editpassword;
