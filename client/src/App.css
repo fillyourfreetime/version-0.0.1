@@ -107,6 +107,14 @@ span{
   color: var(--color-primary-100);
 }
 
+.error-message{
+  color: red;
+}
+
+.mail{
+  color: white;
+}
+
 .submit-button {
   background-color: var(--color-primary-500);
   border-radius: 8px;
