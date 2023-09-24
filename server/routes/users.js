@@ -267,20 +267,19 @@ router.get("/userdata/:id", verifyserver, async (req, res) => {
 
 router.post("/edituser", verifyuser, verifyserver, async (req, res) => {
   const id = req.user.id;
-  const { passwordold, passwordnew, passwordnewrep, newusername } =
-    req.body;
-  const errormessage = []
+  const { passwordold, passwordnew, passwordnewrep, newusername } = req.body;
+  const errormessage = [];
 
   const userinfo = await Users.findOne({ where: { id: id } });
 
   if (passwordold && passwordnew && passwordnew) {
     await bcrypt.compare(passwordold, userinfo.password).then((match) => {
       if (!match) {
-        errormessage.push("old password is incorrect")
+        errormessage.push("old password is incorrect");
       }
     });
     if (passwordnew != passwordnewrep) {
-      errormessage.push("passswors are not the same")
+      errormessage.push("passswors are not the same");
     } else {
       const hashpw = await bcrypt.hash(passwordnew, 10);
       try {
@@ -292,8 +291,11 @@ router.post("/edituser", verifyuser, verifyserver, async (req, res) => {
         errormessage.push(err.message);
       }
     }
-  } else if ((!passwordold || !passwordnew || !passwordnew) && (passwordold || passwordnew || passwordnew) ) {
-    errormessage.push("data missing")
+  } else if (
+    (!passwordold || !passwordnew || !passwordnew) &&
+    (passwordold || passwordnew || passwordnew)
+  ) {
+    errormessage.push("data missing");
   }
 
   if (newusername) {
@@ -310,18 +312,18 @@ router.post("/edituser", verifyuser, verifyserver, async (req, res) => {
         errormessage.push(err.message);
       }
     } else {
-      errormessage.push("username is already in use")
+      errormessage.push("username is already in use");
     }
   }
 
-
   if (
     (resultpw || !passwordold) &&
-    (resultun || !newusername) && (!errormessage)
+    (resultun || !newusername) &&
+    !errormessage
   ) {
     res.json("success");
   } else {
-    res.json(errormessage)
+    res.json(errormessage);
   }
 });
 
@@ -330,7 +332,8 @@ const storage = multer.diskStorage({
     cb(null, "images/temp");
   },
   filename: function (req, file, cb) {
-    const id = req.params.id;
+    console.log(req.user)
+    const id = req.user.id
     const extention = path.extname(file.originalname);
     cb(null, `pfp_${id}` + extention);
   },
@@ -340,21 +343,23 @@ const upload = multer({ storage: storage });
 
 router.post(
   "/editprofile",
-  upload.single("image"),
   verifyserver,
   verifyuser,
+  upload.single("pfp"),
   async (req, res) => {
     const id = req.user.id;
+    console.log(id);
     const { pfp, bio, filetype } = req.body;
     console.log(bio);
     console.log(req.body);
-    if (pfp && req.file) {
+    if (req.file) {
       var imput = path.join(
         __dirname,
         "..",
         "images/temp",
         `"pfp_${id}.${filetype}`
       );
+      console.log(imput)
       var output = path.join(__dirname, "..", "images/temp", id + "png.png");
       var newimage = path.join(
         __dirname,
@@ -393,9 +398,20 @@ router.post(
             })
             .toFile(newimage);
         }
+
         const metadatanew = await sharp(newimage).metadata();
         console.log(metadatanew);
         var newpfp = "images/profile_pictures/pfp_" + id + ".png";
+        fs.unlink(imput, (err) => {
+          if (err) {
+            throw err;
+          }
+        });
+        fs.unlink(output, (err) => {
+          if (err) {
+            throw err;
+          }
+        });
       } catch (error) {
         console.log(error);
       }
@@ -414,17 +430,6 @@ router.post(
       var newbio = oldbio.bio;
       console.log(newbio);
     }
-
-    fs.unlink(imput, (err) => {
-      if (err) {
-        throw err;
-      }
-    });
-    fs.unlink(output, (err) => {
-      if (err) {
-        throw err;
-      }
-    });
 
     try {
       const result = await Users.update(

@@ -51,7 +51,7 @@ function editprofile() {
       formData.append("pfp", image);
       console.log(image);
       const filetype = image.name.split(".").pop();
-      formData.append("filetype", filetype);
+      formData.append("filetype", filetype); 
     }
     console.log(localStorage.getItem("useraccessToken"));
     console.log(formData);
@@ -93,7 +93,7 @@ function editprofile() {
           <Form class="form">
             <p id="heading">Edit your profile</p>
             <div class="field">
-              <input type="file" name="file" onChange={handleImage} />
+              <input type="file" name="image" onChange={handleImage} />
             </div>
             <div class="field">
               <svg
