@@ -19,9 +19,7 @@ function HomePage() {
         })
         .then((response) => {
           if (response.error) {
-            console.log("server error");
           } else {
-            console.log(response.data);
             setListOfPosts(response.data);
           }
         });
@@ -30,7 +28,7 @@ function HomePage() {
   }, []);
   return (
     <div>
-      {listOfPosts.reverse().map((value, key) => {
+      {[...listOfPosts].reverse().map((value, key) => {
         return (
           <div
             className={value.image ? "postImage" : "post"}

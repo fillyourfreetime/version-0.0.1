@@ -14,7 +14,6 @@ function Loginpage() {
 
   const login = () => {
     const data = { username: username, password: password };
-    console.log(data);
     axios
       .post(process.env.REACT_APP_LOGIN, data, {
         headers: {
@@ -22,22 +21,15 @@ function Loginpage() {
         },
       })
       .then((response) => {
-        console.log("eah");
-        console.log(response);
         if (response.data.error) {
           setPostObject(response.data);
-          console.log(response.data.error);
         } else {
-          console.log(response.data.succes);
           localStorage.setItem("useraccessToken", response.data.succes.token);
           setAuthState({
             status: true,
           });
-          console.log(response.data.succes.user)
-          setUserdata(response.data.succes.user);
           navigate("/");
         }
-        console.log(response.data);
       });
   };
 

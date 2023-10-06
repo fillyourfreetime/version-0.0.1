@@ -36,7 +36,6 @@ function RegistrationPage() {
   });
 
   const onSubmit = (data) => {
-    console.log(data);
     axios
       .post(process.env.REACT_APP_REGISTER, data, {
         headers: {
@@ -46,11 +45,10 @@ function RegistrationPage() {
       .then((response) => {
         if (response.data.error) {
           setPostObject(response.data);
-          console.log(response.data.error);
+          console.log(response.data)
         } else {
           setPostObject(response.data);
           navigate("/registrationsuccess");
-          console.log(response.data);
         }
       });
   };
@@ -160,7 +158,7 @@ function RegistrationPage() {
           <br />
           <div className="error-message"> {postObject.error} </div>
           <ErrorMessage name="tos" component="span" />
-          <label>
+          <label className="term">
             <Field type="checkbox" name="tos"/>
             By clicking here, I state that I have read and understood the
             <a href="#" onClick={tos}>
@@ -175,6 +173,9 @@ function RegistrationPage() {
           </button>
         </Form>
       </Formik>
+      <br></br>
+      <br/>
+      <br/>
     </div>
   );
 }

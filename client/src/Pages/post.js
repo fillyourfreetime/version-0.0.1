@@ -20,7 +20,6 @@ function Post() {
         },
       })
       .then((response) => {
-        console.log(response.data);
         setPostObject(response.data);
       });
   }, []);

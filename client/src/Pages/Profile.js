@@ -20,7 +20,6 @@ function Profile() {
         },
       })
       .then((response) => {
-        console.log(response.data);
         setUsername(response.data);
       });
     axios
@@ -30,16 +29,14 @@ function Profile() {
         },
       })
       .then((response) => {
-        console.log(response.data);
         setListOfposts(response.data);
       });
       if (useraccessToken != null) {
          axios
-          .get("http://localhost:3001/users/loggedin", {
+          .get(process.env.REACT_APP_LOGGED_IN, {
             headers: { useraccessToken: useraccessToken },
           })
           .then((response) => {
-            console.log(response.data);
             if (!response.data.error) {
               if(response.data.id == id) {
                 setUseracc(true)
@@ -60,7 +57,7 @@ function Profile() {
               uri: username.pfp,
             }}
           />
-          {Useracc? <button onClick={() => {navigate("client/src/Pages/editpassword.js")}}>Edit your profile</button> : <div></div>}
+          {Useracc? <button onClick={() => {navigate("/editprofile")}}>Edit your profile</button> : <div></div>}
         </div>
       </div>
       <div className="listOfPosts">

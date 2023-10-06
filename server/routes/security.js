@@ -16,6 +16,6 @@ router.post('/maketoken', async (req, res) => {
 
 router.get("/serveraccess",verifyserver, async (req, res) => {
     res.json("success")
-})
+}) 
 
 module.exports = router;

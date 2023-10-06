@@ -43,10 +43,19 @@
   height: 70px;
   background-color: var(--color-surface-200);
   display: flex;
+  position: sticky;
+  top: 0px;
+}
+
+.term {
+  color: white;
+}
+
+.success {
+  color: white;
 }
 
 .sitefooter {
-  position: fixed;
   left: 0;
   bottom: 0;
   width: 100%;
@@ -55,6 +64,8 @@
   color: white;
   display: flex;
   align-items: center;
+  margin-top: 20px;
+  border: 100px;
 }
 
 .sitefooter p{
@@ -163,6 +174,7 @@ span{
   border: 1px solid lightgray;
   font-family: Arial, Helvetica, sans-serif;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 7px 29px 0px;
+  margin-bottom: 100px;
 }
 
 .postImage {
@@ -400,6 +412,16 @@ span{
   box-shadow: inset 2px 5px 10px rgb(5, 5, 5);
 }
 
+.custom-file{
+  background-color: var(--color-primary-100);
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+
 .input-icon {
   height: 1.3em;
   width: 1.3em;
@@ -407,18 +429,25 @@ span{
 }
 
 .input-field {
-  background: none;
-  border: none;
-  outline: none;
-  width: 100%;
-  color: #d3d3d3;
+  height: 40px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border: 2px solid black;
+  border-radius: 5px;
+  padding-left: 10px;
+  font-size: 20px;
+  background-color: var(--color-surface-200)
 }
 
 .form .btn {
-  display: flex;
-  justify-content: center;
-  flex-direction: row;
-  margin-top: 2.5em;
+  color: var(--color-primary-100);
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
 }
 
 .button1 {
@@ -463,6 +492,7 @@ span{
   font-size: 16px;
   border: none;
   align-items: center;
+  margin-left: 1475%
 }
 
 /* The container <div> - needed to position the dropdown content */
@@ -479,6 +509,7 @@ span{
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
+  margin-left: 1450%
 }
 
 /* Links inside the dropdown */

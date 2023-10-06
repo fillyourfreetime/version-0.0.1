@@ -26,7 +26,6 @@ require("dotenv").config();
 const checkservertoken = async (pw) => {
   await axios.post(process.env.REACT_APP_GETOKEN, pw).then((response) => {
     if (response.error) {
-      console.log("server error");
       window.location.reload(false);
     } else {
       localStorage.setItem("serveraccessToken", response.data);
@@ -50,7 +49,7 @@ function App() {
     if (!serverAccessToken) {
       checkservertoken(data);
     } else {
-      axios.get("http://localhost:3001/security/serveraccess", {
+      axios.get(process.env.REACT_APP_GET_SERVER_ACCESS, {
         headers: { serverAccessToken: serverAccessToken},
       }).then((response) => {
         if (response.error) {
@@ -63,13 +62,13 @@ function App() {
   useEffect(() => {
     async function isloggedIn() {
       const useraccessToken = localStorage.getItem("useraccessToken");
+      console.log("hello")
       if (useraccessToken != null) {
         const response = await axios
-          .get("http://localhost:3001/users/loggedin", {
+          .get(process.env.REACT_APP_LOGGED_IN, {
             headers: { useraccessToken: useraccessToken },
           })
-          
-            console.log(response.data);
+          console.log(response.data)
             if (response.data.error) {
               setAuthState({ ...authState, status: false });
             } else {
@@ -77,6 +76,7 @@ function App() {
                 status: true,
               });
               setUserdata(response.data);
+              console.log(response.data)
             }
       } else {
         setAuthState({ ...authState, status: false });

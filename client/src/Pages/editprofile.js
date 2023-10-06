@@ -17,26 +17,22 @@ function editprofile() {
   };
 
   function handleImage(e) {
-    console.log(e.target.files);
     setImage(e.target.files[0]);
   }
   useEffect(() => {
     async function isloggedIn() {
-      console.log("ag");
       const useraccessToken = localStorage.getItem("useraccessToken");
       if (useraccessToken != null) {
         const response = await axios.get(
-          "http://localhost:3001/users/loggedin",
+          process.env.REACT_APP_LOGGED_IN,
           {
             headers: { useraccessToken: useraccessToken },
           }
         );
-        console.log(response.data);
         if (response.data.error) {
           navigate("/");
         } else {
           setUserdata(response.data);
-          console.log(userdata);
         }
       } else {
         navigate("/");
@@ -49,12 +45,9 @@ function editprofile() {
     formData.append("bio", bio);
     if (image) {
       formData.append("pfp", image);
-      console.log(image);
       const filetype = image.name.split(".").pop();
       formData.append("filetype", filetype); 
     }
-    console.log(localStorage.getItem("useraccessToken"));
-    console.log(formData);
     const useraccessToken = localStorage.getItem("useraccessToken");
     axios
       .post(process.env.REACT_APP_EDIT_USERPROFILE, formData, {
@@ -65,10 +58,8 @@ function editprofile() {
         },
       })
       .then((response) => {
-        console.log(response.data);
         if (response.data.error) {
           setPostObject(response.data.error);
-          console.log(response.data.error);
         } else {
           setPostObject(response.data);
         }

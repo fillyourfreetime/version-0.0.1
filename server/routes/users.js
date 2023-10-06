@@ -40,7 +40,7 @@ const sendEmail = (email, token, username) => {
         <body>
         <h1>Dear ${username},</h1>
         <p>You are registered with fillyourfreetime.com with this email adress. Please click the following link to verify this email adress</p>
-        <a href="http://localhost:3000/emailverification/${tokens}"> http://localhost:3000/emailverification/${tokens} </a>
+        <a href="http://fillyourfreetime.com/emailverification/${tokens}"> http://fillyourfreetime.com/emailverification/${tokens} </a>
         </body>
       </html>`,
   };
@@ -332,8 +332,8 @@ const storage = multer.diskStorage({
     cb(null, "images/temp");
   },
   filename: function (req, file, cb) {
-    console.log(req.user)
-    const id = req.user.id
+    console.log(req.user);
+    const id = req.user.id;
     const extention = path.extname(file.originalname);
     cb(null, `pfp_${id}` + extention);
   },
@@ -359,7 +359,7 @@ router.post(
         "images/temp",
         `"pfp_${id}.${filetype}`
       );
-      console.log(imput)
+      console.log(imput);
       var output = path.join(__dirname, "..", "images/temp", id + "png.png");
       var newimage = path.join(
         __dirname,
@@ -463,12 +463,13 @@ router.get("/loggedin", verifyuser, async (req, res) => {
     where: { id: req.user.id },
     attributes: { exclude: ["password", "emailverification"] },
   });
-  console.log(userinfo);
-  const imageURI = await getImageBase64(
-    path.join(__dirname, "..", userinfo.pfp)
-  );
-  userinfo.pfp = imageURI;
-  console.log(userinfo);
+  if (userinfo.pfp) {
+    const imageURI = await getImageBase64(
+      path.join(__dirname, "..", userinfo.pfp)
+    );
+    userinfo.pfp = imageURI;
+  }
+  
   res.json(userinfo);
 });
 

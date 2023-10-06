@@ -11,20 +11,25 @@ function CreatePost() {
   const [posttext, setPosttext] = useState("");
 
   function handleImage(e) {
-    console.log(e.target.files);
     setImage(e.target.files[0]);
   }
   let navigate = useNavigate();
   const initialValues = {
     posttitle: "",
     posttext: "",
-    postImage: "",
+    file: "",
   };
+  const validFileExtensions = { image: ["jpg", "png", "jpeg"] };
+  function isValidFileType(fileName, fileType) {
+    return (
+      fileName &&
+      validFileExtensions[fileType].indexOf(fileName.split(".").pop()) > -1
+    );
+  }
 
   const validationSchema = Yup.object().shape({
     posttitle: Yup.string().required("You must have a title"),
     posttext: Yup.string().required("You must have a text"),
-    postImage: Yup.string().min(3).max(15).required("You must have a username"),
   });
 
   const onSubmit = () => {
@@ -34,13 +39,10 @@ function CreatePost() {
     const id = "temp";
     if (image) {
       formData.append("image", image);
-      console.log(image);
       const filetype = image.name.split(".").pop();
       formData.append("filetype", filetype);
       formData.append("postimage", "yes");
     }
-    console.log(localStorage.getItem("useraccessToken"));
-    console.log(formData);
     const useraccessToken = localStorage.getItem("useraccessToken");
     axios
       .post(`${process.env.REACT_APP_CREATE_POST}${id}`, formData, {
@@ -51,51 +53,50 @@ function CreatePost() {
         },
       })
       .then((response) => {
-        console.log(response.data);
         if (response.data.error) {
           setPostObject(response.data.error);
-          console.log(response.data.error);
         } else {
+          console.log(response.data);
           setPostObject(response.data);
           navigate("/");
         }
+        console.log(response.data);
+        setPostObject(response.data);
+        navigate("/");
       });
+    navigate("/");
   };
 
   return (
     <div className="app">
       {postObject.error && <div class="error">{postObject.error}</div>}
       {postObject.success && <div class="success">{postObject.success}</div>}
-      <Formik initialValues={initialValues} validationSchema={validationSchema}>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={onSubmit}
+      >
         <Form class="form">
           <p id="heading">create post</p>
           <ErrorMessage name="posttitle" component="span" />
-
-          <input
+          <Field
+            name="posttitle"
             type="text"
             autocomplete="off"
             class="input-field"
-            name="posttitle"
             placeholder="(Ex. Title...)"
-            onChange={(event) => {
-              setPosttitle(event.target.value);
-            }}
           />
           <ErrorMessage name="posttext" component="span" />
-          <br />
-          <input
+          <Field
             type="text"
             autocomplete="off"
             class="input-field"
             name="posttext"
             placeholder="(Ex. Post...)"
-            onChange={(event) => {
-              setPosttext(event.target.value);
-            }}
           />
-          <br />
-          <input type="file" name="file" onChange={handleImage} />
-          <button type="button" className="submit-button" onClick={onSubmit}>
+          <ErrorMessage name="file" component="span" />
+          <Field type="file" name="file" accept="image/*" onChange={handleImage} />
+          <button type="submit" className="submit-button">
             Create post
           </button>
         </Form>

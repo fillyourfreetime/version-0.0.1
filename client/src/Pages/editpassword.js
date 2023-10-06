@@ -41,13 +41,10 @@ function editpassword() {
         },
       })
       .then((response) => {
-        console.log(response.data)
         if (response.data.error) {
           setPostObject(response.data);
-          console.log(response.data.error);
         } else {
           setPostObject(response.data);
-          console.log(response.data);
           window.location.reload(false);
         }
       });
@@ -56,13 +53,11 @@ function editpassword() {
       const useraccessToken = localStorage.getItem("useraccessToken");
       if (useraccessToken != null) {
         const response = await axios.get(
-          "http://localhost:3001/users/loggedin",
+          process.env.REACT_APP_LOGGED_IN ,
           {
             headers: { useraccessToken: useraccessToken },
           }
-        );
-
-        console.log(response.data);
+        )
         if (response.data.error) {
           navigate("/");
         } else {

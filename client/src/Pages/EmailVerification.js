@@ -5,13 +5,10 @@ import { useParams } from "react-router-dom"
 function EmailVerification() {
     const [postObject, setPostObject] = useState({});
     let token = useParams();
-    console.log(token)
     useEffect(() => {
-        axios.post("http://localhost:3001/users/emailregistration", token, {headers: { serveraccessToken: localStorage.getItem("serveraccessToken")}}).then((response) => {
-          console.log(response.data);
+        axios.post(process.env.REACT_APP_EMAILREGISTRATION, token, {headers: { serveraccessToken: localStorage.getItem("serveraccessToken")}}).then((response) => {
           if (response.data.error){
             setPostObject(response.data);
-            console.log(response.data.error)
           }else{setPostObject(response.data);}
           
         }); 

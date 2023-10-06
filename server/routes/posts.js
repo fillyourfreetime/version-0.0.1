@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
     cb(null, "images/temp");
   },
   filename: async function (req, file, cb) {
-    const UserId = req.user.id;
+    const UserId = req.user.id; 
     const extention = path.extname(file.originalname);
     const numberofposts = await Users.findOne({
       where: { id: UserId },
