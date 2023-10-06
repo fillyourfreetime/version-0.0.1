@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Image } from "react-native";
 // import('tailwindcss').Config
 
 function Post() {
@@ -46,9 +46,11 @@ function Post() {
           <div className="card-header"> {postObject.posttitle} </div>
           <div className="body">{postObject.posttext}</div>
           {postObject.postImage ? (
-            <img
-              src={`https://server.fillyourfreetime.com/${postObject.postImage}`}
-              class="object-cover"
+            <Image
+              style={{ width: "100%", height: 200 }}
+              source={{
+                uri: `https://server.fillyourfreetime.com/${postObject.postImage}`,
+              }}
             />
           ) : (
             <br />

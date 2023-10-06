@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
     bio: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: "hi I'm using",
+      defaultValue: "hi I'm using fillyourfreetime",
     },
     token: {
       type: DataTypes.STRING,

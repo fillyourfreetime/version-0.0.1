@@ -48,6 +48,7 @@ function editprofile() {
       const filetype = image.name.split(".").pop();
       formData.append("filetype", filetype); 
     }
+    console.log(formData);
     const useraccessToken = localStorage.getItem("useraccessToken");
     axios
       .post(process.env.REACT_APP_EDIT_USERPROFILE, formData, {
@@ -58,6 +59,7 @@ function editprofile() {
         },
       })
       .then((response) => {
+        console.log(response);
         if (response.data.error) {
           setPostObject(response.data.error);
         } else {

@@ -20,7 +20,7 @@ import { AuthContext } from "./helpers/AuthContext";
 import Profile from "./Pages/Profile";
 import { Image } from "react-native";
 import Editprofile from "./Pages/editprofile";
-import Editpassword from "./Pages/editpassword"
+import Editpassword from "./Pages/editpassword";
 require("dotenv").config();
 
 const checkservertoken = async (pw) => {
@@ -49,35 +49,36 @@ function App() {
     if (!serverAccessToken) {
       checkservertoken(data);
     } else {
-      axios.get(process.env.REACT_APP_GET_SERVER_ACCESS, {
-        headers: { serverAccessToken: serverAccessToken},
-      }).then((response) => {
-        if (response.error) {
-          checkservertoken(data)
-        }
-      })
+      axios
+        .get(process.env.REACT_APP_GET_SERVER_ACCESS, {
+          headers: { serverAccessToken: serverAccessToken },
+        })
+        .then((response) => {
+          if (response.error) {
+            checkservertoken(data);
+          }
+        });
     }
   }, []);
 
   useEffect(() => {
     async function isloggedIn() {
       const useraccessToken = localStorage.getItem("useraccessToken");
-      console.log("hello")
+      console.log("hello");
       if (useraccessToken != null) {
-        const response = await axios
-          .get(process.env.REACT_APP_LOGGED_IN, {
-            headers: { useraccessToken: useraccessToken },
-          })
-          console.log(response.data)
-            if (response.data.error) {
-              setAuthState({ ...authState, status: false });
-            } else {
-              setAuthState({
-                status: true,
-              });
-              setUserdata(response.data);
-              console.log(response.data)
-            }
+        const response = await axios.get(process.env.REACT_APP_LOGGED_IN, {
+          headers: { useraccessToken: useraccessToken },
+        });
+        console.log(response.data);
+        if (response.data.error) {
+          setAuthState({ ...authState, status: false });
+        } else {
+          setAuthState({
+            status: true,
+          });
+          setUserdata(response.data);
+          console.log(response.data);
+        }
       } else {
         setAuthState({ ...authState, status: false });
       }
@@ -101,6 +102,7 @@ function App() {
             {!authState.status ? (
               <div>
                 <div class="leftbar">
+                  <Link to="/"> HomePage</Link>
                   <Link to="/login"> Login </Link>
                   <Link to="/registration"> Registration </Link>
                 </div>
@@ -108,28 +110,31 @@ function App() {
               </div>
             ) : (
               <div>
-                <div class="lefttbar">
-                  <Link to="/"> HomePage</Link>
+                <div class="leftbar">
+                  <Link to="/">HomePage</Link>
                   <Link to="/createpost">Create a post</Link>
                 </div>
                 <div class="rightbar">
-                  {Userdata ? (<div class="dropdown">
+                {Userdata ? (
+                  <div class="dropdown">
                     <button class="dropbtn">
                       <Image
                         style={{ width: 35, height: 35, borderRadius: "50%" }}
                         source={{
-                          uri: Userdata.pfp,
+                          uri: `https://server.fillyourfreetime.com/${Userdata.pfp}`,
                         }}
                       />{" "}
                       {Userdata.username}
                     </button>
-
                     <div class="dropdown-content">
                       <Link to={`/profile/${Userdata.id}`}>profile</Link>
                       <Link to="/editprofile">edit profile</Link>
                       <Link onClick={logout}>logout</Link>
                     </div>
-                  </div>):(<div></div>)}
+                  </div>
+                ) : (
+                  <div></div>
+                )}
                 </div>
               </div>
             )}
@@ -152,7 +157,9 @@ function App() {
           </Routes>
         </BrowserRouter>
         <div class="sitefooter">
-          <p class="footertext">&#169; 2023 fillourfreetime. All Rights Reserved </p>
+          <p class="footertext">
+            &#169; 2023 fillourfreetime. All Rights Reserved{" "}
+          </p>
         </div>
       </AuthContext.Provider>
     </div>

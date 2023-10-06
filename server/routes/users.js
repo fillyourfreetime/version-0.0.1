@@ -356,19 +356,19 @@ router.post(
         `"pfp_${id}.${filetype}`
       );
       console.log(imput);
-      var output = path.join(__dirname, "..", "images/temp", id + "png.png");
+      var output = path.join(__dirname, "..", "images/temp", `pfp_${id}_jpg.jpg`);
       var newimage = path.join(
         __dirname,
         "..",
         "images/profile_pictures",
-        "pfp_" + id + ".png"
+        `pfp_${id}.jpg`
       );
       console.log(typeof output);
 
       try {
         const metadata = await sharp(imput).metadata();
-        if (metadata.format != "png") {
-          await sharp(imput).toFormat("png", { palette: true }).toFile(output);
+        if (metadata.format != "jpg") {
+          await sharp(imput).toFormat("jpg", { palette: true }).toFile(output);
         } else {
           await sharp(imput).toFile(output);
         }
@@ -397,7 +397,7 @@ router.post(
 
         const metadatanew = await sharp(newimage).metadata();
         console.log(metadatanew);
-        var newpfp = "images/profile_pictures/pfp_" + id + ".png";
+        var newpfp = `images/profile_pictures/pfp_${id}.jpg`;
         fs.unlink(imput, (err) => {
           if (err) {
             throw err;
@@ -413,7 +413,7 @@ router.post(
       }
     }
     if (fs.existsSync(newimage)) {
-      var newpfp = "images/profile_pictures/pfp_" + id + ".png";
+      var newpfp = `images/profile_pictures/pfp_${id}.jpg`;
     } else {
       var newpfp = "images/profile_pictures/defualtpfp.jpg";
     }
@@ -428,10 +428,17 @@ router.post(
     }
 
     try {
-      const result = await Users.update(
-        { pfp: newpfp, bio: newbio },
-        { where: { id: id } }
-      );
+      if (newpfp) {
+        const result = await Users.update(
+          {bio: newbio },
+          { where: { id: id } }
+        );
+      }else if (req.file){
+        const result = await Users.update(
+          {pfp: newpfp },
+          { where: { id: id } }
+        );
+      }
       res.json("success");
     } catch (err) {
       res.json({ error: err.message });
@@ -459,13 +466,7 @@ router.get("/loggedin", verifyuser, async (req, res) => {
     where: { id: req.user.id },
     attributes: { exclude: ["password", "emailverification"] },
   });
-  if (userinfo.pfp) {
-    const imageURI = await getImageBase64(
-      path.join(__dirname, "..", userinfo.pfp)
-    );
-    userinfo.pfp = imageURI;
-  }
-  
+
   res.json(userinfo);
 });
 
