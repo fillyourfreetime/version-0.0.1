@@ -112,13 +112,6 @@ router.get("/allposts", verifyserver, async (req, res) => {
     await listofposts.forEach(async (posts) => {
       var user = await Users.findByPk(posts.dataValues.UserId);
       posts.dataValues.username = user.username;
-      if (posts.dataValues.postImage) {
-        console.log("post.postimage");
-        const imageURI = await getImageBase64(
-          path.join(__dirname, "..", posts.dataValues.postImage)
-        );
-        posts.dataValues.image = imageURI
-      }
       itemsProcessed++;
       if (itemsProcessed == listofposts.length) {
         res.json(listofposts);
@@ -132,23 +125,12 @@ router.get("/allposts", verifyserver, async (req, res) => {
 router.get("/onepost:id", verifyserver, async (req, res) => {
   const id = req.params.id;
   console.log(id);
-
   try {
     const post = await Posts.findByPk(id);
     if (post) {
       var user = await Users.findByPk(post.UserId);
       post.dataValues.username = user.username;
-      if (post.postImage) {
-        console.log("post.postimage");
-        const imageURI = await getImageBase64(
-          path.join(__dirname, "..", post.postImage)
-        );
-        post.dataValues.image = imageURI
-        res.json(post.dataValues);
-      } else {
-        console.log(post);
-        res.json(post.dataValues);
-      }
+      res.json(post);
     } else {
       res.json({ error: "post not found" });
     }
@@ -168,13 +150,6 @@ router.get("/personposts/:id", verifyserver, async (req, res) => {
       await post.forEach(async (posts) => {
         var user = await Users.findByPk(posts.dataValues.UserId);
         posts.dataValues.username = user.username;
-        if (posts.dataValues.postImage) {
-          console.log("post.postimage");
-          const imageURI = await getImageBase64(
-            path.join(__dirname, "..", posts.dataValues.postImage)
-          );
-          posts.dataValues.image = imageURI
-        }
         itemsProcessed++;
         if (itemsProcessed == post.length) {
           console.log("success!");

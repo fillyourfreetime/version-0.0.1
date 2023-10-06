@@ -257,10 +257,6 @@ router.get("/userdata/:id", verifyserver, async (req, res) => {
     attributes: { exclude: ["password", "emailverification"] },
   });
   console.log(userinfo);
-  const imageURI = await getImageBase64(
-    path.join(__dirname, "..", userinfo.pfp)
-  );
-  userinfo.pfp = imageURI;
 
   res.json(userinfo);
 });

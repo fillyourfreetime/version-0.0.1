@@ -23,6 +23,8 @@ app.use("/comments", commentsRouter);
 const securityRouter = require("./routes/security");
 app.use("/security", securityRouter);
 
+app.use('/images', express.static('images'))
+
 db.sequelize.sync().then(() => {
   app.listen(3001, () => {  
     console.log("server up on port 3001");

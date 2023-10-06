@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Image } from "react-native";
+import {  Link } from "react-router-dom";
 
 function Profile() {
   let { id } = useParams();
@@ -51,13 +51,8 @@ function Profile() {
         <div className="info">
           <h1> Username: {username.username} </h1>
           <p>{username.bio}</p>
-          <Image
-            style={{ width: 400, height: 200 }} 
-            source={{
-              uri: username.pfp,
-            }}
-          />
-          {Useracc? <button onClick={() => {navigate("/editprofile")}}>Edit your profile</button> : <div></div>}
+          <img src={`https://server.fillyourfreetime.com/${username.pfp}`}style={{ width: 200, height: 200 }}/>
+          {Useracc? <Link to="/editprofile" className="button2">edit profile</Link> : <div></div>}
         </div>
       </div>
       <div className="listOfPosts">
@@ -72,12 +67,7 @@ function Profile() {
               <div className="card-header"> {value.posttitle} </div>
               <div className="body">{value.posttext}</div>
               {value.image ? (
-                <Image
-                  style={{ width: 400, height: 200 }}
-                  source={{
-                    uri: value.image,
-                  }}
-                />
+                <img src={"server.fillyourfreetime/"}style={{ width: 400, height: 200 }}/>
               ) : (
                 <div></div>
               )}

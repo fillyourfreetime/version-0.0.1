@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Image } from "react-native";
 
 require("dotenv").config();
 
@@ -31,19 +30,17 @@ function HomePage() {
       {[...listOfPosts].reverse().map((value, key) => {
         return (
           <div
-            className={value.image ? "postImage" : "post"}
+            className={value.postImage ? "postImage" : "post"}
             onClick={() => {
               navigate(`/post/${value.id}`);
             }}
           >
             <div className="card-header"> {value.posttitle} </div>
             <div className="body">{value.posttext}</div>
-            {value.image ? (
-              <Image
+            {value.postImage ? (
+              <img
                 style={{ width: 400, height: 200 }}
-                source={{
-                  uri: value.image,
-                }}
+                src={`https://server.fillyourfreetime.com/${value.postImage}`}
               />
             ) : (
               <div></div>

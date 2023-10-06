@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { Image } from "react-native";
 import { useNavigate } from "react-router-dom";
+// import('tailwindcss').Config
 
 function Post() {
   let { id } = useParams();
@@ -40,17 +40,15 @@ function Post() {
     <div className="postPage">
       <div className="leftSide">
         <div
-          className={postObject.image ? "postImage" : "post"}
-          id={postObject.image ? "individualImage" : "individual"}
+          className={postObject.postImage ? "postImage" : "post"}
+          id={postObject.postImage ? "individualImage" : "individual"}
         >
           <div className="card-header"> {postObject.posttitle} </div>
           <div className="body">{postObject.posttext}</div>
-          {postObject.image ? (
-            <Image
-              style={{ width: "100%", height: 200 }}
-              source={{
-                uri: postObject.image,
-              }}
+          {postObject.postImage ? (
+            <img
+              src={`https://server.fillyourfreetime.com/${postObject.postImage}`}
+              class="object-cover"
             />
           ) : (
             <br />

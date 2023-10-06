@@ -3,6 +3,7 @@
   padding: 0;
 }
 
+
 /** color variables */
 :root {
   --color-primary-100: #4e65f5;
@@ -42,7 +43,7 @@
   align-items: center;
   height: 70px;
   background-color: var(--color-surface-200);
-  display: flex;
+  display: Flex, justify between;
   position: sticky;
   top: 0px;
 }

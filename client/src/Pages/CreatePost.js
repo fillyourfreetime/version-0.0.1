@@ -16,8 +16,7 @@ function CreatePost() {
   let navigate = useNavigate();
   const initialValues = {
     posttitle: "",
-    posttext: "",
-    file: "",
+    posttext: ""
   };
   const validFileExtensions = { image: ["jpg", "png", "jpeg"] };
   function isValidFileType(fileName, fileType) {
@@ -32,10 +31,10 @@ function CreatePost() {
     posttext: Yup.string().required("You must have a text"),
   });
 
-  const onSubmit = () => {
+  const onSubmit = (values) => {
     const formData = new FormData();
-    formData.append("posttitle", posttitle);
-    formData.append("posttext", posttext);
+    formData.append("posttitle", values.posttitle);
+    formData.append("posttext", values.posttext);
     const id = "temp";
     if (image) {
       formData.append("image", image);
@@ -44,6 +43,7 @@ function CreatePost() {
       formData.append("postimage", "yes");
     }
     const useraccessToken = localStorage.getItem("useraccessToken");
+    console.log(formData)
     axios
       .post(`${process.env.REACT_APP_CREATE_POST}${id}`, formData, {
         headers: {
@@ -91,7 +91,7 @@ function CreatePost() {
             type="text"
             autocomplete="off"
             class="input-field"
-            name="posttext"
+            name="posttext" 
             placeholder="(Ex. Post...)"
           />
           <ErrorMessage name="file" component="span" />

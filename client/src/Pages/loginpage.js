@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../helpers/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 function Loginpage() {
   const [username, setUsername] = useState("");
@@ -12,7 +12,8 @@ function Loginpage() {
 
   let navigate = useNavigate();
 
-  const login = () => {
+  const login = (e) => {
+    e.preventDefault();
     const data = { username: username, password: password };
     axios
       .post(process.env.REACT_APP_LOGIN, data, {
@@ -39,7 +40,7 @@ function Loginpage() {
 
   return (
     <div>
-      <form class="form">
+      <form class="form" onSubmit={login}>
         <p id="heading">Login</p>
         <div class="field">
           <svg
@@ -83,10 +84,10 @@ function Loginpage() {
           ></input>
         </div>
         <div className="error-message"> {postObject.error} </div>
-        <button class="button1" type="button" onClick={login}>
+        <button class="button1" type="submit">
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Login&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </button>
-        <button class="button2">Sign Up</button>
+        <Link to="/registration" className="button2">Register</Link>
       </form>
     </div>
   );
