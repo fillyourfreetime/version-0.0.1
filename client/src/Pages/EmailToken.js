@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom"
 function EmailToken() {
     return (
         <div>
-          <p className="mail">please check your email to verify your email</p>
+          <p className="mail">please check your email to verify your email, this can take up to 10 minutes</p>
         </div>
     )
 }

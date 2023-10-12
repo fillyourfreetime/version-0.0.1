@@ -353,10 +353,15 @@ router.post(
         __dirname,
         "..",
         "images/temp",
-        `"pfp_${id}.${filetype}`
+        `pfp_${id}.${filetype}`
       );
       console.log(imput);
-      var output = path.join(__dirname, "..", "images/temp", `pfp_${id}_jpg.jpg`);
+      var output = path.join(
+        __dirname,
+        "..",
+        "images/temp",
+        `pfp_${id}_jpg.jpg`
+      );
       var newimage = path.join(
         __dirname,
         "..",
@@ -408,38 +413,40 @@ router.post(
             throw err;
           }
         });
+        var newpfp = `images/profile_pictures/pfp_${id}.jpg`;
       } catch (error) {
         console.log(error);
       }
     }
-    if (fs.existsSync(newimage)) {
-      var newpfp = `images/profile_pictures/pfp_${id}.jpg`;
-    } else {
-      var newpfp = "images/profile_pictures/defualtpfp.jpg";
-    }
-    if (bio) {
-      var newbio = bio;
-    } else {
+    // if (fs.existsSync(newimage)) {
+    //   var newpfp = `images/profile_pictures/pfp_${id}.jpg`;
+    // } else {
+    //   var newpfp = "images/profile_pictures/defualtpfp.jpg";
+    // }
+    if (!bio || bio == undefined) {
       var oldbio = await Users.findOne({
         where: { id: id },
       });
       var newbio = oldbio.bio;
       console.log(newbio);
+    } else {
+      var newbio = bio;
     }
+    console.log(newbio);
 
     try {
       if (newpfp) {
         const result = await Users.update(
-          {bio: newbio },
+          { pfp: newpfp},
           { where: { id: id } }
         );
-      }else if (req.file){
+      } else if (req.file) {
         const result = await Users.update(
-          {pfp: newpfp },
+          { pfp: newpfp },
           { where: { id: id } }
         );
       }
-      res.json("success");
+      res.json("account updated successfully");
     } catch (err) {
       res.json({ error: err.message });
     }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
@@ -9,6 +9,14 @@ function CreatePost() {
   const [image, setImage] = useState("");
   const [posttitle, setPosttitle] = useState("");
   const [posttext, setPosttext] = useState("");
+  const [ipAddress, setIPAddress] = useState('')
+
+  useEffect(() => {
+    fetch('https://api.ipify.org?format=json')
+      .then(response => response.json())
+      .then(data => setIPAddress(data.ip))
+      .catch(error => console.log(error))
+  }, []);
 
   function handleImage(e) {
     setImage(e.target.files[0]);
@@ -16,7 +24,7 @@ function CreatePost() {
   let navigate = useNavigate();
   const initialValues = {
     posttitle: "",
-    posttext: ""
+    posttext: "",
   };
   const validFileExtensions = { image: ["jpg", "png", "jpeg"] };
   function isValidFileType(fileName, fileType) {
@@ -28,13 +36,16 @@ function CreatePost() {
 
   const validationSchema = Yup.object().shape({
     posttitle: Yup.string().required("You must have a title"),
-    posttext: Yup.string().required("You must have a text"),
+    posttext: Yup.string().required("You must have a text").max(750),
   });
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
+ 
+    console.log(ipAddress)
     const formData = new FormData();
     formData.append("posttitle", values.posttitle);
     formData.append("posttext", values.posttext);
+    formData.append("ip", ipAddress);
     const id = "temp";
     if (image) {
       formData.append("image", image);
@@ -43,12 +54,12 @@ function CreatePost() {
       formData.append("postimage", "yes");
     }
     const useraccessToken = localStorage.getItem("useraccessToken");
-    console.log(formData)
+    console.log(formData);
     axios
       .post(`${process.env.REACT_APP_CREATE_POST}${id}`, formData, {
         headers: {
           useraccessToken: useraccessToken,
-          serveraccessToken: localStorage.getItem("serveraccessToken"),
+          serveraccessToken: localStorage.getItem("serveraccessToken" ),
           "Content-Type": "multipart/form-data",
         },
       })
@@ -79,23 +90,34 @@ function CreatePost() {
         <Form class="form">
           <p id="heading">create post</p>
           <ErrorMessage name="posttitle" component="span" />
-          <Field
-            name="posttitle"
-            type="text"
-            autocomplete="off"
-            class="input-field"
-            placeholder="(Ex. Title...)"
-          />
+          <div class="field">
+            <Field
+              name="posttitle"
+              type="text"
+              autocomplete="off"
+              class="input-field"
+              placeholder="(Ex. Title...)"
+            />
+          </div>
           <ErrorMessage name="posttext" component="span" />
-          <Field
-            type="text"
-            autocomplete="off"
-            class="input-field"
-            name="posttext" 
-            placeholder="(Ex. Post...)"
-          />
+          <div class="field">
+            <Field
+              as="textarea"
+              autocomplete="off"
+              class="input-fieldlarge"
+              name="posttext"
+              placeholder="(Ex. Post...)"
+            />
+          </div>
           <ErrorMessage name="file" component="span" />
-          <Field type="file" name="file" accept="image/*" onChange={handleImage} />
+          <div class="field">
+            <Field
+              type="file"
+              name="file"
+              accept="image/*"
+              onChange={handleImage}
+            />
+          </div>
           <button type="submit" className="submit-button">
             Create post
           </button>

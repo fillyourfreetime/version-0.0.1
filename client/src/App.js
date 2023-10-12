@@ -98,9 +98,8 @@ function App() {
         value={{ authState, setAuthState, Userdata, setUserdata }}
       >
         <BrowserRouter>
-          <div className="navbar">
             {!authState.status ? (
-              <div>
+              <div className="navbar">
                 <div class="leftbar">
                   <Link to="/"> HomePage</Link>
                   <Link to="/login"> Login </Link>
@@ -109,7 +108,7 @@ function App() {
                 <div class="rightbar"></div>
               </div>
             ) : (
-              <div>
+              <div className="navbar">
                 <div class="leftbar">
                   <Link to="/">HomePage</Link>
                   <Link to="/createpost">Create a post</Link>
@@ -138,7 +137,6 @@ function App() {
                 </div>
               </div>
             )}
-          </div>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />

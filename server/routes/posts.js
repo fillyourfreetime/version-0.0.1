@@ -36,7 +36,7 @@ router.post(
   upload.single("image"),
   async (req, res) => {
     console.log(req.body);
-    const { posttitle, posttext, postimage, filetype } = req.body; 
+    const { posttitle, posttext, postimage, filetype,ip } = req.body; 
     console.log(filetype);
     const username = req.user.username;
     const UserId = req.user.id;
@@ -78,6 +78,7 @@ router.post(
           posttext: posttext,
           username: username,
           UserId: UserId,
+          ip: ip,
           postImage: `images/post_images/postimage_${newNumberOfPosts}_${UserId}_jpg.jpg`,
           numberofposts: newNumberOfPosts,
         });
@@ -88,6 +89,7 @@ router.post(
           username: username,
           UserId: UserId,
           Username: username,
+          ip: ip,
         });
         res.json({ succses: "post successfully created" });
       }
